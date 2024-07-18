@@ -1,0 +1,6 @@
+pip install poetry
+
+docker-compose up -d
+
+
+superuser Tony 1111

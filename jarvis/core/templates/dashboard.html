@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Welcome, {{ user.username }}!</h2>
+<p>This is your personal assistant dashboard.</p>
+
+<div>
+    <h3>Quick Links</h3>
+    <ul>
+        <li><a href="{% url 'contact_list' %}">Contacts</a></li>
+        <li><a href="{% url 'note_list' %}">Notes</a></li>
+        <li><a href="{% url 'file_list' %}">Files</a></li>
+        <li><a href="{% url 'news' %}">News</a></li>
+    </ul>
+</div>
+{% endblock %}
