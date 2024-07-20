@@ -87,18 +87,18 @@ def logout_view(request):
     return redirect('home')
 
 
-@login_required
-def dashboard_view(request):
-    """
-    Renders the dashboard page. This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-
-    Returns:
-        HttpResponse: The rendered dashboard page.
-    """
-    return render(request, 'dashboard.html')
+# @login_required
+# def dashboard_view(request):
+#     """
+#     Renders the dashboard page. This view requires the user to be logged in.
+#
+#     Args:
+#         request (HttpRequest): The request object used to generate this response.
+#
+#     Returns:
+#         HttpResponse: The rendered dashboard page.
+#     """
+#     return render(request, 'dashboard.html')
 
 
 @login_required
