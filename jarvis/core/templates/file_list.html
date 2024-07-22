@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>File List</h2>
+<form method="get" action="{% url 'file_list' %}">
+    <input type="text" name="q" placeholder="Search by name" value="{{ search_query }}">
+    <select name="category">
+        <option value="">All Categories</option>
+        <option value="image" {{ selected_image }}>Image</option>
+        <option value="document" {{ selected_document }}>Document</option>
+        <option value="video" {{ selected_video }}>Video</option>
+        <option value="other" {{ selected_other }}>Other</option>
+    </select>
+    <button type="submit">Filter</button>
+</form>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Uploaded at</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file in files %}
+        <tr>
+            <td>{{ file.name }}</td>
+            <td>{{ file.get_category_display }}</td>
+            <td>{{ file.uploaded_at }}</td>
+            <td>
+                <a href="{{ file.file.url }}" download class="btn btn-primary">Download</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No files found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'upload_file' %}" class="btn btn-secondary">Upload new file</a>
+{% endblock %}

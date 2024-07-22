@@ -46,19 +46,30 @@ class Note(models.Model):
     tags = models.CharField(max_length=255)
 
 
+def user_directory_path(instance, filename):
+    # Файли будуть завантажуватися в MEDIA_ROOT/user_<id>/<filename>
+    return f'user_{instance.user.id}/{filename}'
+
+
 class File(models.Model):
-    """
-    Model to store files uploaded by users.
+    CATEGORY_CHOICES = [
+        ('image', 'Image'),
+        ('document', 'Document'),
+        ('video', 'Video'),
+        ('other', 'Other'),
+    ]
 
-    Attributes:
-        user (ForeignKey): The user who uploaded this file. Links to the CustomUser model.
-        file (FileField): The file itself. Files are uploaded to the 'uploads/' directory.
-        category (CharField): The category of the file. Maximum length of 50 characters.
-    """
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='uploads/')
-    category = models.CharField(max_length=50)
+    file = models.FileField(upload_to=user_directory_path)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    name = models.CharField(max_length=255, default="Untitled")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
+
+# TODO: Давай якщо назву користувач не вказує то береться назва файлу. якщо така вже існує то до назви кріпиться (1), (2) і тд.
 
 class News(models.Model):
     """

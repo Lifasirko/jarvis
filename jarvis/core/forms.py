@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
-from .models import CustomUser
+from .models import CustomUser, File
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -55,3 +55,9 @@ class LoginForm(AuthenticationForm):
 #     class Meta:
 #         model = Profile
 #         fields = ['avatar']
+
+
+class FileUploadForm(forms.ModelForm):
+    class Meta:
+        model = File
+        fields = ['file', 'category', 'name']

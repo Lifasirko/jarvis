@@ -10,7 +10,9 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 
 from .forms import CustomUserCreationForm
+from .forms import FileUploadForm
 from .models import CustomUser
+from .models import File
 
 
 def home_view(request):
@@ -146,16 +148,36 @@ def note_list_view(request):
 
 @login_required
 def file_list_view(request):
-    """
-    Renders the file list page. This view requires the user to be logged in.
+    query = request.GET.get('q', '')
+    category = request.GET.get('category', '')
+    files = File.objects.filter(user=request.user)
 
-    Args:
-        request (HttpRequest): The request object used to generate this response.
+    if query:
+        files = files.filter(name__icontains=query)
+    if category:
+        files = files.filter(category=category)
 
-    Returns:
-        HttpResponse: The rendered file list page.
-    """
-    return render(request, 'file_list.html')
+    context = {
+        'files': files,
+        'selected_category': category,
+        'query': query,
+    }
+
+    return render(request, 'file_list.html', context)
+
+
+@login_required
+def upload_file_view(request):
+    if request.method == 'POST':
+        form = FileUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file_instance = form.save(commit=False)
+            file_instance.user = request.user
+            file_instance.save()
+            return redirect('file_list')
+    else:
+        form = FileUploadForm()
+    return render(request, 'upload_file.html', {'form': form})
 
 
 @login_required
