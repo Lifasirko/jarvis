@@ -1,6 +1,6 @@
 from django import forms
 from django.conf import settings
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 
 from .models import CustomUser, File
@@ -77,12 +77,14 @@ class FileUploadForm(forms.ModelForm):
         user = self.instance.user
 
         if file.size > settings.MAX_FILE_SIZE:
-            raise forms.ValidationError(f'File size must be under {settings.MAX_FILE_SIZE / (1024 * 1024)} MB. Current file size is {file.size / (1024 * 1024)} MB.')
+            raise forms.ValidationError(
+                f'File size must be under {settings.MAX_FILE_SIZE / (1024 * 1024)} MB. Current file size is {file.size / (1024 * 1024)} MB.')
 
         if user.get_used_storage() + file.size > user.storage_limit:
             raise forms.ValidationError('You have exceeded your storage limit.')
 
         return file
+
 
 # class ProfileForm(forms.ModelForm):
 #     avatar = forms.ImageField(widget=forms.FileInput())
@@ -90,3 +92,18 @@ class FileUploadForm(forms.ModelForm):
 #     class Meta:
 #         model = Profile
 #         fields = ['avatar']
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'avatar']
+        widgets = {
+            'avatar': forms.FileInput()
+        }
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ['old_password', 'new_password1', 'new_password2']

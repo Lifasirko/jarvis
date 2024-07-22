@@ -3,7 +3,8 @@ from django.urls import path
 
 from . import views
 from .views import home_view, register_view, login_view, logout_view, contact_list_view, \
-    note_list_view, file_list_view, news_view, user_list_view, delete_user_view, upload_file_view, delete_file_view
+    note_list_view, file_list_view, news_view, user_list_view, delete_user_view, upload_file_view, delete_file_view, \
+    profile_view, change_password_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -22,6 +23,9 @@ urlpatterns = [
     path('reset-password/complete/',
          PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),
          name='password_reset_complete'),
+
+    path('profile/', profile_view, name='profile'),
+    path('profile/change-password/', change_password_view, name='change_password'),
 
     # path('dashboard/', dashboard_view, name='dashboard'),
     path('contacts/', contact_list_view, name='contact_list'),

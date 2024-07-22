@@ -5,6 +5,7 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     storage_limit = models.BigIntegerField(default=50 * 1024 * 1024)  # Ліміт за замовчуванням 50 МБ
 
     def get_used_storage(self):

@@ -2,6 +2,7 @@ import mimetypes
 
 from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import PasswordResetView
@@ -14,6 +15,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import CustomUserCreationForm
 from .forms import FileUploadForm
+from .forms import ProfileForm, CustomPasswordChangeForm
 from .models import CustomUser
 from .models import File
 
@@ -96,6 +98,41 @@ def logout_view(request):
     """
     logout(request)
     return redirect('home')
+
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        profile_form = ProfileForm(request.POST, request.FILES, instance=request.user)
+        if profile_form.is_valid():
+            profile_form.save()
+            return redirect('profile')
+    else:
+        profile_form = ProfileForm(instance=request.user)
+
+    password_form = CustomPasswordChangeForm(user=request.user)
+
+    return render(request, 'profile.html', {
+        'profile_form': profile_form,
+        'password_form': password_form,
+    })
+
+
+@login_required
+def change_password_view(request):
+    if request.method == 'POST':
+        password_form = CustomPasswordChangeForm(data=request.POST, user=request.user)
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # Important!
+            return redirect('profile')
+    else:
+        password_form = CustomPasswordChangeForm(user=request.user)
+
+    return render(request, 'profile.html', {
+        'password_form': password_form,
+        'profile_form': ProfileForm(instance=request.user),
+    })
 
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
