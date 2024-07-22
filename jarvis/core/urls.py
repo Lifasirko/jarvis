@@ -3,7 +3,7 @@ from django.urls import path
 
 from . import views
 from .views import home_view, register_view, login_view, logout_view, contact_list_view, \
-    note_list_view, file_list_view, news_view, user_list_view, delete_user_view, upload_file_view
+    note_list_view, file_list_view, news_view, user_list_view, delete_user_view, upload_file_view, delete_file_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -30,6 +30,7 @@ urlpatterns = [
 
     path('files/', file_list_view, name='file_list'),
     path('files/upload/', upload_file_view, name='upload_file'),
+    path('files/delete/<int:file_id>/', delete_file_view, name='delete_file'),
 
     path('news/', news_view, name='news'),
 
