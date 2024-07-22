@@ -197,7 +197,6 @@ def file_list_view(request):
     return render(request, 'file_list.html', context)
 
 
-
 @login_required
 def upload_file_view(request):
     """
