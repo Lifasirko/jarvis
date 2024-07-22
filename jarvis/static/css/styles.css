@@ -61,3 +61,17 @@
 .fixed-table .empty-row {
     text-align: center;
 }
+
+/* Додаткові стилі для діаграми */
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.chart-wrapper {
+    width: 400px;
+    height: 400px;
+    max-width: 100%;
+}

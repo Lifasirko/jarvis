@@ -5,13 +5,14 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
-    """
-    Custom user model that extends Django's built-in AbstractUser.
+    storage_limit = models.BigIntegerField(default=50 * 1024 * 1024)  # Ліміт за замовчуванням 50 МБ
 
-    This model inherits from Django's AbstractUser and does not add any additional fields or methods.
-    It is used to customize the user model if needed in the future.
-    """
-    pass
+    def get_used_storage(self):
+        used_storage = sum(file.file.size for file in self.file_set.all())
+        return used_storage
+
+    def __str__(self):
+        return self.username
 
 
 class Contact(models.Model):
@@ -81,10 +82,6 @@ class File(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        """
-        Custom save method to determine the file category based on the file's MIME type
-        if the category is not provided by the user.
-        """
         if not self.category:
             mime_type, _ = mimetypes.guess_type(self.file.name)
 

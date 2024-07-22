@@ -74,10 +74,13 @@ class FileUploadForm(forms.ModelForm):
 
     def clean_file(self):
         file = self.cleaned_data.get('file')
+        user = self.instance.user
 
         if file.size > settings.MAX_FILE_SIZE:
-            raise forms.ValidationError(
-                f'File size must be under {settings.MAX_FILE_SIZE / (1024 * 1024)} MB. Current file size is {file.size / (1024 * 1024)} MB.')
+            raise forms.ValidationError(f'File size must be under {settings.MAX_FILE_SIZE / (1024 * 1024)} MB. Current file size is {file.size / (1024 * 1024)} MB.')
+
+        if user.get_used_storage() + file.size > user.storage_limit:
+            raise forms.ValidationError('You have exceeded your storage limit.')
 
         return file
 

@@ -175,6 +175,11 @@ def file_list_view(request):
     video_files = files.filter(category='video').count()
     other_files = files.filter(category='other').count()
 
+    # Storage statistics
+    used_storage = request.user.get_used_storage() / (1024 * 1024)  # Convert to MB
+    storage_limit = request.user.storage_limit / (1024 * 1024)  # Convert to MB
+    free_storage = storage_limit - used_storage
+
     context = {
         'files': files,
         'selected_category': category,
@@ -184,9 +189,13 @@ def file_list_view(request):
         'document_files': document_files,
         'video_files': video_files,
         'other_files': other_files,
+        'used_storage': used_storage,
+        'storage_limit': storage_limit,
+        'free_storage': free_storage,
     }
 
     return render(request, 'file_list.html', context)
+
 
 
 @login_required
@@ -205,11 +214,11 @@ def upload_file_view(request):
     """
     if request.method == 'POST':
         form = FileUploadForm(request.POST, request.FILES)
+        form.instance.user = request.user
         if form.is_valid():
             file_instance = form.save(commit=False)
             file_instance.user = request.user
 
-            # Determine file type
             mime_type, _ = mimetypes.guess_type(file_instance.file.name)
             if not form.cleaned_data['category']:
                 if mime_type:

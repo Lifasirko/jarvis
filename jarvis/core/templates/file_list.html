@@ -9,17 +9,31 @@
     <p>Videos: {{ video_files }}</p>
     <p>Others: {{ other_files }}</p>
 </div>
+
+<div>
+    <h3>Storage Statistics</h3>
+    <p>Total Storage: {{ storage_limit|floatformat:2 }} MB</p>
+    <p>Used Storage: {{ used_storage|floatformat:2 }} MB</p>
+    <p>Free Storage: {{ free_storage|floatformat:2 }} MB</p>
+    <div class="chart-container">
+        <div class="chart-wrapper">
+            <canvas id="storageChart"></canvas>
+        </div>
+    </div>
+</div>
+
 <form method="get" action="{% url 'file_list' %}">
-    <input type="text" name="q" placeholder="Search by name" value="{{ search_query }}">
+    <input type="text" name="q" placeholder="Search by name" value="{{ query }}">
     <select name="category">
         <option value="">All Categories</option>
-        <option value="image" {{ selected_image }}>Image</option>
-        <option value="document" {{ selected_document }}>Document</option>
-        <option value="video" {{ selected_video }}>Video</option>
-        <option value="other" {{ selected_other }}>Other</option>
+        <option value="image" {% if selected_category == 'image' %}selected{% endif %}>Image</option>
+        <option value="document" {% if selected_category == 'document' %}selected{% endif %}>Document</option>
+        <option value="video" {% if selected_category == 'video' %}selected{% endif %}>Video</option>
+        <option value="other" {% if selected_category == 'other' %}selected{% endif %}>Other</option>
     </select>
     <button type="submit">Filter</button>
 </form>
+
 <div class="table-container">
     <table class="fixed-table">
         <thead>
@@ -54,9 +68,29 @@
 </div>
 <a href="{% url 'upload_file' %}" class="btn btn-secondary">Upload new file</a>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 function confirmDelete() {
     return confirm('Are you sure you want to delete this file?');
 }
+
+// Render storage usage chart
+document.addEventListener("DOMContentLoaded", function() {
+    var ctx = document.getElementById('storageChart').getContext('2d');
+    var storageChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Used Storage', 'Free Storage'],
+            datasets: [{
+                data: [{{ used_storage|floatformat:2 }}, {{ free_storage|floatformat:2 }}],
+                backgroundColor: ['#FF6384', '#36A2EB'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+});
 </script>
 {% endblock %}

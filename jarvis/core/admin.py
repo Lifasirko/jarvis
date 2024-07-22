@@ -1,3 +1,13 @@
 from django.contrib import admin
+from .models import CustomUser, File, Contact, Note, News
 
-# Register your models here.
+
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'storage_limit', 'get_used_storage')
+
+
+admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(File)
+admin.site.register(Contact)
+admin.site.register(Note)
+admin.site.register(News)
