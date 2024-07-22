@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
@@ -67,13 +68,18 @@ class FileUploadForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        """
-        Initializes the FileUploadForm. If a file instance is provided, the name field
-        is set to the name of the uploaded file.
-        """
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.file:
             self.fields['name'].initial = self.instance.file.name
+
+    def clean_file(self):
+        file = self.cleaned_data.get('file')
+
+        if file.size > settings.MAX_FILE_SIZE:
+            raise forms.ValidationError(
+                f'File size must be under {settings.MAX_FILE_SIZE / (1024 * 1024)} MB. Current file size is {file.size / (1024 * 1024)} MB.')
+
+        return file
 
 # class ProfileForm(forms.ModelForm):
 #     avatar = forms.ImageField(widget=forms.FileInput())

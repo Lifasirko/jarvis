@@ -20,36 +20,38 @@
     </select>
     <button type="submit">Filter</button>
 </form>
-<table>
-    <thead>
-        <tr>
-            <th style="width: 30%;">Name</th>
-            <th style="width: 20%;">Category</th>
-            <th style="width: 20%;">Uploaded at</th>
-            <th style="width: 30%;">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for file in files %}
-        <tr>
-            <td style="word-wrap: break-word;">{{ file.name }}</td>
-            <td>{{ file.get_category_display }}</td>
-            <td>{{ file.uploaded_at }}</td>
-            <td>
-                <a href="{{ file.file.url }}" download class="btn btn-primary">Download</a>
-                <form method="post" action="{% url 'delete_file' file.id %}" style="display:inline;" onsubmit="return confirmDelete();">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">No files found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-container">
+    <table class="fixed-table">
+        <thead>
+            <tr>
+                <th class="name-column">Name</th>
+                <th class="category-column">Category</th>
+                <th class="date-column">Uploaded at</th>
+                <th class="actions-column">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td class="name-column">{{ file.name }}</td>
+                <td class="category-column">{{ file.get_category_display }}</td>
+                <td class="date-column">{{ file.uploaded_at }}</td>
+                <td class="actions-column">
+                    <a href="{{ file.file.url }}" download class="btn btn-primary">Download</a>
+                    <form method="post" action="{% url 'delete_file' file.id %}" style="display:inline;" onsubmit="return confirmDelete();">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td class="empty-row" colspan="4">No files found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 <a href="{% url 'upload_file' %}" class="btn btn-secondary">Upload new file</a>
 
 <script>

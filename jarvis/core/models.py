@@ -103,6 +103,10 @@ class File(models.Model):
 
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        self.file.delete(save=False)
+        super().delete(*args, **kwargs)
+
 
 class News(models.Model):
     """

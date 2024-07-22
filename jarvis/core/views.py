@@ -1,5 +1,6 @@
 import mimetypes
 
+from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -230,7 +231,7 @@ def upload_file_view(request):
     else:
         form = FileUploadForm()
 
-    return render(request, 'upload_file.html', {'form': form})
+    return render(request, 'upload_file.html', {'form': form, 'max_file_size': settings.MAX_FILE_SIZE})
 
 
 @login_required

@@ -1,168 +1,63 @@
-@import url('http://weloveiconfonts.com/api/?family=entypo');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-
-/* Font / Universal Properties */
-[class*="entypo-"]:before {
-  font-family: 'entypo', sans-serif;
-  transition: 0.3s;
-}
-
-body {
-    background-color: #0d0d0d;
-    font-family: 'Orbitron', sans-serif;
-    color: #00ffcc;
+/* Центрування таблиці */
+.table-container {
     display: flex;
-    align-items: center;
     justify-content: center;
-    height: 100vh;
-    margin: 0;
-    text-align: center;
-}
-
-h1, h2, h3 {
-    font-weight: 400;
-    color: #ffffff;
-    text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
-}
-
-.container {
-    border: 2px solid #00ffcc;
-    padding: 20px;
-    box-shadow: 0 0 20px #00ffcc, 0 0 30px #00ffcc inset;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    text-align: center;
-    max-width: 600px;
+    align-items: center;
     width: 100%;
 }
 
-button {
-    background-color: #00ffcc;
-    border: none;
-    padding: 10px 20px;
-    color: #0d0d0d;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-button:hover {
-    background-color: #00cc99;
-    transform: scale(1.05);
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"] {
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 1px solid #00ffcc;
-    padding: 10px;
-    color: #00ffcc;
-    font-size: 16px;
-    border-radius: 5px;
-    outline: none;
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-input[type="text"]::placeholder,
-input[type="password"]::placeholder,
-input[type="email"]::placeholder {
-    color: #00ffcc;
-}
-
-/* Table Styles */
-table {
-    width: 100%;
+.fixed-table {
+    table-layout: fixed;
+    width: 80%; /* Фіксована ширина таблиці, можна змінити за потреби */
+    max-width: 80%; /* Запобігає розтягуванню таблиці */
     border-collapse: collapse;
-    table-layout: fixed; /* Fix table layout */
+    margin: 20px auto; /* Центрування таблиці */
 }
 
-th, td {
+/* Ширина стовпців */
+.fixed-table th, .fixed-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    overflow-wrap: break-word; /* Allow word break */
 }
 
-th {
+/* Висота рядків */
+.fixed-table tr {
+    height: 50px; /* Встановлюємо висоту рядків */
+}
+
+.fixed-table thead {
     background-color: #f2f2f2;
 }
 
-th {
-    width: 25%; /* Fixed width for table headers */
+.fixed-table th {
+    padding: 10px;
+    text-align: left;
 }
 
-td {
-    word-wrap: break-word; /* Allow long words to break */
+.fixed-table td {
+    padding: 10px;
 }
 
-td:nth-child(1) {
-    width: 30%; /* Fixed width for the first column */
+/* Для додаткової фіксації ширини конкретних стовпців */
+.fixed-table .name-column {
+    width: 30%;
 }
 
-td:nth-child(2) {
-    width: 20%; /* Fixed width for the second column */
+.fixed-table .category-column {
+    width: 20%;
 }
 
-td:nth-child(3) {
-    width: 20%; /* Fixed width for the third column */
+.fixed-table .date-column {
+    width: 20%;
 }
 
-td:nth-child(4) {
-    width: 30%; /* Fixed width for the fourth column */
+.fixed-table .actions-column {
+    width: 30%;
 }
 
-.btn {
-    padding: 8px 16px;
-    margin: 4px;
-    text-decoration: none;
-    color: white;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
-}
-
-.btn-primary {
-    background-color: #007bff;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-}
-
-.btn:hover {
-    opacity: 0.8;
-}
-
-/* Progress Bar Styles */
-#progressWrapper {
-    margin-top: 20px;
-}
-
-progress {
-    width: 100%;
-    height: 20px;
-    appearance: none;
-}
-
-progress::-webkit-progress-bar {
-    background-color: #f3f3f3;
-    border-radius: 5px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,.2);
-}
-
-progress::-webkit-progress-value {
-    background-color: #00ffcc;
-    border-radius: 5px;
-}
-
-progress::-moz-progress-bar {
-    background-color: #00ffcc;
-    border-radius: 5px;
+/* Стиль для порожньої таблиці */
+.fixed-table .empty-row {
+    text-align: center;
 }

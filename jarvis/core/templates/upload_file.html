@@ -15,7 +15,18 @@
 
 <script>
 document.getElementById('uploadForm').onsubmit = function(event) {
-    event.preventDefault(); // зупиняємо стандартну відправку форми
+    var fileInput = document.querySelector('input[type="file"]');
+    var maxFileSize = {{ max_file_size|default:2621440 }}; // Default 2.5MB in bytes
+
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+        if (file.size > maxFileSize) {
+            alert('File size must be under ' + (maxFileSize / (1024 * 1024)) + ' MB. Current file size is ' + (file.size / (1024 * 1024)).toFixed(2) + ' MB.');
+            event.preventDefault();
+            return false;
+        }
+    }
+
     var formData = new FormData(this);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', this.action, true);
@@ -41,6 +52,31 @@ document.getElementById('uploadForm').onsubmit = function(event) {
     };
 
     xhr.send(formData);
+    event.preventDefault();
 };
+
+document.querySelector('input[type="file"]').addEventListener('change', function(event) {
+    var fileInput = event.target;
+    var file = fileInput.files[0];
+
+    if (file) {
+        // Set the file name
+        document.querySelector('input[name="name"]').value = file.name;
+
+        // Set the file category based on MIME type
+        var mimeType = file.type;
+        var categoryInput = document.querySelector('select[name="category"]');
+
+        if (mimeType.startsWith('image/')) {
+            categoryInput.value = 'image';
+        } else if (mimeType.startsWith('video/')) {
+            categoryInput.value = 'video';
+        } else if (mimeType === 'application/pdf' || mimeType === 'application/msword' || mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            categoryInput.value = 'document';
+        } else {
+            categoryInput.value = 'other';
+        }
+    }
+});
 </script>
 {% endblock %}
