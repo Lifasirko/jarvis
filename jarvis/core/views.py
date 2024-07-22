@@ -1,10 +1,16 @@
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 
 from .forms import CustomUserCreationForm
+from .models import CustomUser
 
 
 def home_view(request):
@@ -87,6 +93,15 @@ def logout_view(request):
     return redirect('home')
 
 
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'password_reset.html'
+    email_template_name = 'password_reset_email.html'
+    html_email_template_name = 'password_reset_email.html'
+    success_url = reverse_lazy('password_reset_done')
+    success_message = "An email with instructions to reset your password has been sent to %(email)s."
+    subject_template_name = 'password_reset_subject.txt'
+
+
 # @login_required
 # def dashboard_view(request):
 #     """
@@ -155,3 +170,16 @@ def news_view(request):
         HttpResponse: The rendered news page.
     """
     return render(request, 'news.html')
+
+
+@login_required
+def user_list_view(request):
+    users = CustomUser.objects.all()
+    return render(request, 'user_list.html', {'users': users})
+
+
+@login_required
+def delete_user_view(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    user.delete()
+    return redirect('user_list')
