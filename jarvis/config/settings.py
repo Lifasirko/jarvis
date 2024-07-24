@@ -42,6 +42,8 @@ INSTALLED_APPS = [
 
     'core',
 
+    'notes'
+
     'contacts',
 
     'django.contrib.sites',

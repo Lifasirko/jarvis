@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ note.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/notes.css' %}">
+</head>
+<body>
+    <h1>{{ note.title }}</h1>
+    <p>{{ note.content }}</p>
+    <p><strong>Created:</strong> {{ note.created_at }}</p>
+    <p><strong>Updated:</strong> {{ note.updated_at }}</p>
+    <p><strong>Tags:</strong> 
+        {% for tag in note.tags.all %}
+            {{ tag.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+    <a href="{% url 'notes:note_edit' note.pk %}">Edit</a>
+    <form method="post" action="{% url 'notes:note_delete' note.pk %}">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+    <a href="{% url 'notes:note_list' %}">Back to Notes</a>
+</body>
+</html>
