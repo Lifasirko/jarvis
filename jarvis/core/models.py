@@ -16,26 +16,6 @@ class CustomUser(AbstractUser):
         return self.username
 
 
-class Contact(models.Model):
-    """
-    Model to store contact information for users.
-
-    Attributes:
-        user (ForeignKey): The user to whom this contact belongs. Links to the CustomUser model.
-        name (CharField): The name of the contact. Maximum length of 255 characters.
-        address (CharField): The address of the contact. Maximum length of 255 characters.
-        phone_number (CharField): The phone number of the contact. Maximum length of 15 characters.
-        email (EmailField): The email address of the contact.
-        birthday (DateField): The birthday of the contact.
-    """
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=15)
-    email = models.EmailField()
-    birthday = models.DateField()
-
-
 class Note(models.Model):
     """
     Model to store notes for users.
