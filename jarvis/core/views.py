@@ -181,7 +181,7 @@ def note_list_view(request):
     Returns:
         HttpResponse: The rendered note list page.
     """
-    return render(request, 'note_list.html')
+    return render(request, 'notes/note_list.html')
 
 
 @login_required

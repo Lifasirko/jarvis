@@ -1,0 +1,19 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Note</title>
+    <link rel="stylesheet" href="{% static 'css/notes.css' %}">
+</head>
+<body>
+    <h1>Delete Note</h1>
+    <p>Are you sure you want to delete "{{ note.title }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+    <a href="{% url 'notes:note_list' %}">Cancel</a>
+</body>
+</html>
