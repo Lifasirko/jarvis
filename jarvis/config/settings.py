@@ -46,6 +46,8 @@ INSTALLED_APPS = [
 
     'contacts',
 
+    'task_manager',
+
     'django.contrib.sites',
     'allauth',
     'allauth.account',
