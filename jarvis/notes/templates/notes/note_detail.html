@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <title>{{ note.title }}</title>
     <link rel="stylesheet" href="{% static 'css/notes.css' %}">
-    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
 </head>
 <body>
     <h1>{{ note.title }}</h1>
@@ -19,10 +18,10 @@
         {% endfor %}
     </p>
     <a href="{% url 'note_edit' note.pk %}">Edit</a>
-    <form method="post" action="{% url 'note_delete' note.pk %}">
+    <form method="post" action="{% url 'notes:note_delete' note.pk %}">
         {% csrf_token %}
         <button type="submit">Delete</button>
     </form>
-    <a href="{% url 'note_list' %}">Back to Notes</a>
+    <a href="{% url 'notes:note_list' %}">Back to Notes</a>
 </body>
 </html>

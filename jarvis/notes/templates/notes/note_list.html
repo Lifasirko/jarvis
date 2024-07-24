@@ -5,8 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Note List</title>
+    <style>
+        body {
+            background-color: #000;
+        }
+    </style>
     <link rel="stylesheet" href="{% static 'css/notes.css' %}">
-    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+
 </head>
 <body>
     <h1>Notes</h1>
@@ -17,16 +22,37 @@
     <a href="{% url 'notes:note_create' %}">Add New Note</a>
 
     {% if notes %}
-        <ul>
-            {% for note in notes %}
-                <li>
-                    <a href="{% url 'notes:note_detail' note.pk %}">{{ note.title }}</a> - {{ note.created_at }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No notes found.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Tags</th>
+                    <th>Created at</th>
+                    <th>Updated at</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in notes %}
+                    <tr>
+                        <td>{{ note.title }}</td>
+                        <td>{{ note.content }}</td>
+                        <td>{{ note.tags.all|join:", " }}</td>
+                        <td>{{ note.created_at }}</td>
+                        <td>{{ note.updated_at }}</td>
+                        <td>
+                            <a href="{% url 'notes:note_edit' note.pk %}">Edit</a>
+                            <a href="{% url 'notes:note_delete' note.pk %}">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">No notes found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
-
 </body>
 </html>

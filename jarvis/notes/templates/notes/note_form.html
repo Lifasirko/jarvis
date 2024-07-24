@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <title>{% if note.pk %}Edit{% else %}New{% endif %} Note</title>
     <link rel="stylesheet" href="{% static 'css/notes.css' %}">
-    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
 </head>
 <body>
     <h1>{% if note.pk %}Edit{% else %}New{% endif %} Note</h1>
@@ -15,6 +14,6 @@
         {{ form.as_p }}
         <button type="submit">{% if note.pk %}Update{% else %}Save{% endif %}</button>
     </form>
-    <a href="{% url 'note_list' %}">Back to Notes</a>
+    <a href="{% url 'notes:note_list' %}">Back to Notes</a>
 </body>
 </html>

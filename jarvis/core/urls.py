@@ -10,7 +10,7 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     # path('dashboard/', dashboard_view, name='dashboard'),
     path('contacts/', contact_list_view, name='contact_list'),
-    path('notes/', note_list_view, name='note_list'),
+    # path('notes/', note_list_view, name='note_list'),
     path('files/', file_list_view, name='file_list'),
     path('news/', news_view, name='news'),
 ]
