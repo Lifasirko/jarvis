@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form method="GET" action="{% url 'contacts:search_contacts' %}">
+    <input type="text" name="query" value="{{ query | default_if_none:'' }}" placeholder="Search by name or phone">
+    <label for="birthday_range">Days until birthday:</label>
+    <input type="range" id="birthday_range" name="birthday_filter" min="0" max="364" value="{{ birthday_filter | default:'364' }}" oninput="this.nextElementSibling.value = this.value">
+    <output>{{ birthday_filter | default:'364' }}</output>
+
+    <button type="submit">Search</button>
+</form>
+
+<a href="{% url 'contacts:add_contact' %}" class="btn btn-primary">Add Contact</a>
+
+{% if contacts %}
+
+{% for contact in contacts %}
+
+<div class="contacts mt-2">
+    <a href="{% url 'contacts:fulldata_contact' contact.id %}" class="button">
+        <span class="text" itemprop="text">{{contact.name}}</span>
+        <span class="text" itemprop="text">{{contact.phone_number}}</span>
+        <a href="{% url 'contacts:update_contact' contact.id %}" class="btn btn-primary">Update</a>
+        <a href="{% url 'contacts:delete_contact' contact.id %}" class="btn btn-secondary">Delete</a>
+    </a>
+</div>
+
+{% endfor %}
+
+{% else %}
+
+    <p>No contacts found matching your search.</p>
+    
+{% endif %}
+
+<nav>
+    <div class="pager">
+        <span class="previous">
+            <a class="{% if not contacts.has_previous %} disabled {% endif %}"
+            href="{% if contacts.has_previous %} {% url 'contacts:contact_list' page=contacts.previous_page_number %} {% else %} # {% endif %}">
+            <span aria-hidden="true">←</span>
+            Previous</a>
+        </span>
+       <span class="next">
+            <a class="{% if not contacts.has_next %} disabled {% endif %}"
+            href="{% if contacts.has_next %} {% url 'contacts:contact_list' page=contacts.next_page_number %} {% else %} # {% endif %}">Next
+            <span aria-hidden="true">→</span></a>
+       </span>
+    </div>
+</nav>
+
+</div>
+
+{% endblock %}

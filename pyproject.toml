@@ -12,6 +12,8 @@ psycopg2-binary = "^2.9.9"
 pillow = "^10.4.0"
 django-allauth = "^0.63.6"
 django-sslserver = "^0.22"
+django-phonenumber-field = "^8.0.0"
+phonenumbers = "^8.13.40"
 
 
 [build-system]

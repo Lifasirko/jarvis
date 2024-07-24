@@ -21,7 +21,11 @@ from django.conf.urls.static import static
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('core.urls')),
-    path('accounts/', include('allauth.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+                  path('admin/', admin.site.urls),
+                  path('', include('core.urls')),
+                  path('', include('contacts.urls')),
+                  path('notes/', include('notes.urls')),
+                  path('accounts/', include('allauth.urls')),
+
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

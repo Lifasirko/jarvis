@@ -42,6 +42,10 @@ INSTALLED_APPS = [
 
     'core',
 
+    'notes',
+
+    'contacts',
+
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -171,4 +175,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 MAX_FILE_SIZE = env.int('MAX_FILE_SIZE')
 
+PHONENUMBER_DB_FORMAT = env('PHONENUMBER_DB_FORMAT')
+PHONENUMBER_DEFAULT_REGION = env('PHONENUMBER_DEFAULT_REGION')
 LOGIN_REDIRECT_URL = '/'

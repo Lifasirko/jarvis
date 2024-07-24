@@ -3,10 +3,11 @@ from django.urls import path
 
 from . import views
 from .views import home_view, register_view, login_view, logout_view, contact_list_view, \
-    note_list_view, file_list_view, news_view, user_list_view, delete_user_view, upload_file_view, delete_file_view, \
-    profile_view, change_password_view
+    file_list_view, news_view, user_list_view, delete_user_view, upload_file_view, delete_file_view, \
+    profile_view, change_password_view, note_list_view
 from django.conf import settings
 from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('', home_view, name='home'),
