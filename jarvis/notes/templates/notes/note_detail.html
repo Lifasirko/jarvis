@@ -17,7 +17,7 @@
             {{ tag.name }}{% if not forloop.last %}, {% endif %}
         {% endfor %}
     </p>
-    <a href="{% url 'note_edit' note.pk %}">Edit</a>
+    <a href="{% url 'notes:note_edit' note.pk %}">Edit</a>
     <form method="post" action="{% url 'notes:note_delete' note.pk %}">
         {% csrf_token %}
         <button type="submit">Delete</button>

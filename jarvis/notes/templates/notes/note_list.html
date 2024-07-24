@@ -42,6 +42,7 @@
                         <td>{{ note.created_at }}</td>
                         <td>{{ note.updated_at }}</td>
                         <td>
+                            <a href="{% url 'notes:note_detail' note.pk %}">View</a>
                             <a href="{% url 'notes:note_edit' note.pk %}">Edit</a>
                             <a href="{% url 'notes:note_delete' note.pk %}">Delete</a>
                         </td>
