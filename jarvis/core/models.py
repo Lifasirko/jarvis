@@ -1,16 +1,20 @@
+import mimetypes
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
 
 class CustomUser(AbstractUser):
-    """
-    Custom user model that extends Django's built-in AbstractUser.
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    storage_limit = models.BigIntegerField(default=50 * 1024 * 1024)  # Ліміт за замовчуванням 50 МБ
 
-    This model inherits from Django's AbstractUser and does not add any additional fields or methods.
-    It is used to customize the user model if needed in the future.
-    """
-    pass
+    def get_used_storage(self):
+        used_storage = sum(file.file.size for file in self.file_set.all())
+        return used_storage
+
+    def __str__(self):
+        return self.username
 
 
 class Contact(models.Model):
@@ -71,18 +75,60 @@ class Note(models.Model):
 
 
 
+def user_directory_path(instance, filename):
+    # Файли будуть завантажуватися в MEDIA_ROOT/user_<id>/<filename>
+    return f'user_{instance.user.id}/{filename}'
+
+
 class File(models.Model):
     """
     Model to store files uploaded by users.
 
     Attributes:
-        user (ForeignKey): The user who uploaded this file. Links to the CustomUser model.
-        file (FileField): The file itself. Files are uploaded to the 'uploads/' directory.
-        category (CharField): The category of the file. Maximum length of 50 characters.
+        user (ForeignKey): The user who uploaded the file. Links to the CustomUser model.
+        file (FileField): The uploaded file.
+        category (CharField): The category of the file. Choices are 'image', 'document', 'video', and 'other'.
+        name (CharField): The name of the file.
+        uploaded_at (DateTimeField): The date and time when the file was uploaded.
     """
+    CATEGORY_CHOICES = [
+        ('image', 'Image'),
+        ('document', 'Document'),
+        ('video', 'Video'),
+        ('other', 'Other'),
+    ]
+
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='uploads/')
-    category = models.CharField(max_length=50)
+    file = models.FileField(upload_to=user_directory_path)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True)
+    name = models.CharField(max_length=255, default="Untitled")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.category:
+            mime_type, _ = mimetypes.guess_type(self.file.name)
+
+            if mime_type:
+                if mime_type.startswith('image'):
+                    self.category = 'image'
+                elif mime_type.startswith('video'):
+                    self.category = 'video'
+                elif mime_type in ['application/pdf', 'application/msword',
+                                   'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
+                    self.category = 'document'
+                else:
+                    self.category = 'other'
+            else:
+                self.category = 'other'
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.file.delete(save=False)
+        super().delete(*args, **kwargs)
 
 
 class News(models.Model):

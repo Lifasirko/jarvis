@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>File List</h2>
+<div>
+    <p>Total files: {{ total_files }}</p>
+    <p>Images: {{ image_files }}</p>
+    <p>Documents: {{ document_files }}</p>
+    <p>Videos: {{ video_files }}</p>
+    <p>Others: {{ other_files }}</p>
+</div>
+
+<div>
+    <h3>Storage Statistics</h3>
+    <p>Total Storage: {{ storage_limit|floatformat:2 }} MB</p>
+    <p>Used Storage: {{ used_storage|floatformat:2 }} MB</p>
+    <p>Free Storage: {{ free_storage|floatformat:2 }} MB</p>
+    <div class="chart-container">
+        <div class="chart-wrapper">
+            <canvas id="storageChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<form method="get" action="{% url 'file_list' %}">
+    <input type="text" name="q" placeholder="Search by name" value="{{ query }}">
+    <select name="category">
+        <option value="">All Categories</option>
+        <option value="image" {% if selected_category == 'image' %}selected{% endif %}>Image</option>
+        <option value="document" {% if selected_category == 'document' %}selected{% endif %}>Document</option>
+        <option value="video" {% if selected_category == 'video' %}selected{% endif %}>Video</option>
+        <option value="other" {% if selected_category == 'other' %}selected{% endif %}>Other</option>
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<div class="table-container">
+    <table class="fixed-table">
+        <thead>
+            <tr>
+                <th class="name-column">Name</th>
+                <th class="category-column">Category</th>
+                <th class="date-column">Uploaded at</th>
+                <th class="actions-column">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td class="name-column">{{ file.name }}</td>
+                <td class="category-column">{{ file.get_category_display }}</td>
+                <td class="date-column">{{ file.uploaded_at }}</td>
+                <td class="actions-column">
+                    <a href="{{ file.file.url }}" download class="btn btn-primary">Download</a>
+                    <form method="post" action="{% url 'delete_file' file.id %}" style="display:inline;" onsubmit="return confirmDelete();">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td class="empty-row" colspan="4">No files found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<a href="{% url 'upload_file' %}" class="btn btn-secondary">Upload new file</a>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function confirmDelete() {
+    return confirm('Are you sure you want to delete this file?');
+}
+
+// Render storage usage chart
+document.addEventListener("DOMContentLoaded", function() {
+    var ctx = document.getElementById('storageChart').getContext('2d');
+    var storageChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Used Storage', 'Free Storage'],
+            datasets: [{
+                data: [{{ used_storage|floatformat:2 }}, {{ free_storage|floatformat:2 }}],
+                backgroundColor: ['#FF6384', '#36A2EB'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+});
+</script>
+{% endblock %}

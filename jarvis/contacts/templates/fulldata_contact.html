@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="contact-detail">
+    <h3 class="contact_name">{{contact.name}}</h3>
+    <p><strong>Address:</strong> <span class="contact-address">{{contact.address}}</span></p>
+    <p><strong>Phone number:</strong> <span class="contact-phone-number">{{contact.phone_number}}</span></p>
+    <p><strong>Email:</strong> <span class="contact-email">{{contact.email}}</span></p>
+    <p><strong>Birthday:</strong> <span class="contact-birthday">{{contact.birthday}}</span></p>
+</div>
+
+<a href="{% url 'contacts:update_contact' contact.id %}" class="btn btn-secondary">Update</a>
+<a href="{% url 'contacts:delete_contact' contact.id %}" class="btn btn-secondary">Delete</a>
+<a href="{% url 'contacts:contact_list' %}" class="btn btn-primary">Back</a>
+
+{% endblock %}
