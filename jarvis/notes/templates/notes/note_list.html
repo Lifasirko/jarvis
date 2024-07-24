@@ -1,0 +1,32 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Note List</title>
+    <link rel="stylesheet" href="{% static 'css/notes.css' %}">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+</head>
+<body>
+    <h1>Notes</h1>
+    <form method="get" action="{% url 'notes:note_list' %}">
+        <input type="text" name="q" placeholder="Search notes...">
+        <button type="submit">Search</button>
+    </form>
+    <a href="{% url 'notes:note_create' %}">Add New Note</a>
+
+    {% if notes %}
+        <ul>
+            {% for note in notes %}
+                <li>
+                    <a href="{% url 'notes:note_detail' note.pk %}">{{ note.title }}</a> - {{ note.created_at }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No notes found.</p>
+    {% endif %}
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import home_view, register_view, login_view, logout_view, contact_list_view, \
-    note_list_view, file_list_view, news_view
+    file_list_view, news_view, note_list_view
 
 urlpatterns = [
     path('', home_view, name='home'),

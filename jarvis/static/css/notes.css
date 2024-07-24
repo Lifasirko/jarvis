@@ -1,0 +1,25 @@
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    min-height: 80vh;
+    background-color: #000000;
+    overflow-x: hidden;
+}
+
+h1 {
+    color: #00ffcc;
+}
+
+a {
+    color: #00ffcc;
+}
+
+li {
+    color: #00ffcc;
+}
+
+p {
+    color: #00ffcc;
+}
