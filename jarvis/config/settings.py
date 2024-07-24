@@ -42,11 +42,14 @@ INSTALLED_APPS = [
 
     'core',
 
+    'contacts',
+
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -171,4 +174,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 MAX_FILE_SIZE = env.int('MAX_FILE_SIZE')
 
+PHONENUMBER_DB_FORMAT = env('PHONENUMBER_DB_FORMAT')
+PHONENUMBER_DEFAULT_REGION = env('PHONENUMBER_DEFAULT_REGION')
 LOGIN_REDIRECT_URL = '/'
