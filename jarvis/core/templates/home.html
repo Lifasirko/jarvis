@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+{% extends "base.html" %}
+=======
 {% extends "base.html" %} 
+>>>>>>> 39bb110d02ffd08c19553422bb6c221251eaea89
 {% block content %}
 <style>
   body {
@@ -6,8 +10,12 @@
     color: #ffffff;
     font-size: 18px;
   }
+<<<<<<< HEAD
+  h1, h3 {
+=======
   h1,
   h3 {
+>>>>>>> 39bb110d02ffd08c19553422bb6c221251eaea89
     color: #ffffff;
   }
   .container {
@@ -54,6 +62,17 @@
     <li><a href="{% url 'file_list' %}">Files</a></li>
     <li><a href="{% url 'news' %}">News</a></li>
   </ul>
+  <form method="post">
+    {% csrf_token %}
+    <input type="text" name="prompt" placeholder="Ask Jarvis" required>
+    <button type="submit">Ask</button>
+  </form>
+  {% if response %}
+  <div class="response">
+    <h3>Response from Jarvis:</h3>
+    <p>{{ response }}</p>
+  </div>
+  {% endif %}
   <div class="social-media">
     <a href="https://www.facebook.com" target="_blank" title="Facebook">Facebook</a>
     <a href="https://www.twitter.com" target="_blank" title="Twitter">Twitter</a>
@@ -65,5 +84,9 @@
 {% else %}
 <h1>Welcome to Jarvis</h1>
 <p>Please <a href="{% url 'login' %}">login</a> to access your personal assistant features.</p>
+<<<<<<< HEAD
+{% endif %}
+=======
 {% endif %} 
+>>>>>>> 39bb110d02ffd08c19553422bb6c221251eaea89
 {% endblock %}
