@@ -2,13 +2,12 @@
 
 {% block content %}
 <style>
-    /* Загальні стилі для цієї сторінки */
     .file-list-page {
         display: flex;
         justify-content: space-between;
         padding: 20px;
-        color: #ffffff; /* Білий шрифт */
-        font-size: 18px; /* Збільшений шрифт */
+        color: #ffffff;
+        font-size: 18px;
     }
 
     .statistics {
@@ -33,7 +32,7 @@
         border: 1px solid #4caf50;
         padding: 10px;
         text-align: left;
-        font-size: 16px; /* Збільшений шрифт в таблиці */
+        font-size: 16px;
     }
 
     .fixed-table th {
@@ -52,7 +51,7 @@
         text-decoration: none;
         color: #ffffff;
         cursor: pointer;
-        font-size: 16px; /* Збільшений шрифт кнопок */
+        font-size: 16px;
     }
 
     .btn-primary {
@@ -72,7 +71,7 @@
     }
 
     .btn-secondary {
-        background-color: #42a5f5; /* Блакитний */
+        background-color: #42a5f5;
     }
 
     .btn-secondary:hover {
@@ -165,7 +164,6 @@ function confirmDelete() {
     return confirm('Are you sure you want to delete this file?');
 }
 
-// Render storage usage chart
 document.addEventListener("DOMContentLoaded", function() {
     var ctx = document.getElementById('storageChart').getContext('2d');
     var storageChart = new Chart(ctx, {
