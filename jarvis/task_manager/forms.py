@@ -33,11 +33,15 @@ class TaskForm(forms.ModelForm):
 
         if commit:
             task.save()
-            new_tags = self.cleaned_data.get('new_tags')
-            if new_tags:
-                tag_names = [name.strip() for name in new_tags.split(',')]
-                tags = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
-                task.tags.set(tags)
+
+        new_tags = self.cleaned_data.get('new_tags')
+        if new_tags:
+            tag_names = [name.strip() for name in new_tags.split(',')]
+            tags = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+            task.save()  # Save the task before setting the many-to-many field
+            task.tags.set(tags)
+
+        if commit:
             self.save_m2m()
         return task
 
