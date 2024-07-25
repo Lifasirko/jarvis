@@ -11,6 +11,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('', views.chat_view, name='home'),
     path('', home_view, name='home'),
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),

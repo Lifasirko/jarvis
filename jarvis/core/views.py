@@ -19,6 +19,17 @@ from .forms import ProfileForm, CustomPasswordChangeForm
 from .models import CustomUser
 from .models import File
 
+from django.shortcuts import render
+from .chatgpt_service import get_chatgpt_response
+
+
+def chat_view(request):
+    response = None
+    if request.method == 'POST':
+        prompt = request.POST.get('prompt')
+        response = get_chatgpt_response(prompt)
+    return render(request, 'home.html', {'response': response})
+
 
 def home_view(request):
     """
