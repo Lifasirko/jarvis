@@ -37,6 +37,8 @@ class Contact(models.Model):
     birthday = models.DateField()
 
 
+# <<<<<<< note_app_two
+# =======
 
 class Tag(models.Model):
     """
@@ -80,6 +82,7 @@ def user_directory_path(instance, filename):
     return f'user_{instance.user.id}/{filename}'
 
 
+# >>>>>>> tasks
 class File(models.Model):
     """
     Model to store files uploaded by users.

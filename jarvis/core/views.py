@@ -171,20 +171,6 @@ def contact_list_view(request):
 
 
 @login_required
-def note_list_view(request):
-    """
-    Renders the note list page. This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-
-    Returns:
-        HttpResponse: The rendered note list page.
-    """
-    return render(request, 'notes/note_list.html')
-
-
-@login_required
 def file_list_view(request):
     """
     Renders the file list page with the ability to filter files by name and category.
