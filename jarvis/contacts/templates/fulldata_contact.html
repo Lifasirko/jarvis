@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .contact-detail {
+        text-align: center;
+        border: 2px solid #00aaff;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #2e2e2e;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .contact_name {
+        color: #00aaff;
+    }
+    .contact-address, .contact-phone-number, .contact-email, .contact-birthday {
+        color: #ffffff;
+    }
+    .btn {
+        background-color: #00aaff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+    }
+    .btn-secondary {
+        background-color: #0077cc;
+    }
+    .btn-primary {
+        background-color: #4caf50;
+    }
+    .btn-primary:hover {
+        background-color: #388e3c;
+    }
+    .btn-secondary:hover {
+        background-color: #005fa3;
+    }
+</style>
+<style>
+    .contact-detail {
+        text-align: center;
+        border: 2px solid #00aaff;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #2e2e2e;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .contact_name {
+        color: #00aaff;
+    }
+    .contact-address, .contact-phone-number, .contact-email, .contact-birthday {
+        color: #ffffff;
+    }
+    .btn {
+        background-color: #00aaff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+    }
+    .btn-secondary {
+        background-color: #0077cc;
+    }
+    .btn-primary {
+        background-color: #4caf50;
+    }
+    .btn-primary:hover {
+        background-color: #388e3c;
+    }
+    .btn-secondary:hover {
+        background-color: #005fa3;
+    }
+</style>
+
+<div class="contact-detail">
+    <h3 class="contact_name">{{ contact.name }}</h3>
+    <p><strong>Address:</strong> <span class="contact-address">{{ contact.address }}</span></p>
+    <p><strong>Phone number:</strong> <span class="contact-phone-number">{{ contact.phone_number }}</span></p>
+    <p><strong>Email:</strong> <span class="contact-email">{{ contact.email }}</span></p>
+    <p><strong>Birthday:</strong> <span class="contact-birthday">{{ contact.birthday }}</span></p>
+</div>
+
+<div class="grid mt-4">
+    <a href="{% url 'contacts:update_contact' contact.id %}" class="btn btn-secondary">Update</a>
+    <a href="{% url 'contacts:delete_contact' contact.id %}" class="btn btn-secondary">Delete</a>
+    <a href="{% url 'contacts:contact_list' %}" class="btn btn-primary">Back</a>
+</div>
+
+{% endblock %}

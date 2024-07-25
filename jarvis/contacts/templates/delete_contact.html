@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Contact{% endblock %}
+
+{% block content %}
+<style>
+    .confirmation-container {
+        text-align: center;
+        border: 2px solid #00ffcc;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #2e2e2e;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .confirmation-container h2 {
+        color: #00ffcc;
+    }
+    .confirmation-container p {
+        color: #ffffff;
+        margin-bottom: 20px;
+    }
+    button.btn-danger {
+        background-color: #ff4d4d;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: white;
+    }
+    button.btn-danger:hover {
+        background-color: #cc0000;
+    }
+    button.btn-secondary {
+        background-color: #00aaff;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: white;
+    }
+    button.btn-secondary:hover {
+        background-color: #0077cc;
+    }
+</style>
+
+<div class="confirmation-container">
+    <h2>Delete Contact</h2>
+
+    <p>Are you sure you want to delete the contact "{{ contact.name }}"?</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Delete</button>
+        <a href="{% url 'contacts:contact_list' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}
