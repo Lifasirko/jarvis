@@ -18,9 +18,11 @@
         <label for="id_task_list">Task List</label>
         <select name="task_list" id="id_task_list" class="form-control">
             {% for task_list in form.fields.task_list.queryset %}
-                <option value="{{ task_list.id }}" {% if task_list.id == form.initial.task_list %}selected{% endif %}>
-                    {{ task_list.name }}
-                </option>
+                {% if task_list.owner == user %}
+                    <option value="{{ task_list.id }}" {% if task_list.id == form.initial.task_list %}selected{% endif %}>
+                        {{ task_list.name }}
+                    </option>
+                {% endif %}
             {% endfor %}
         </select>
     </div>
