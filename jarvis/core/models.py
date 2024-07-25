@@ -2,6 +2,7 @@ import mimetypes
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class CustomUser(AbstractUser):
@@ -36,18 +37,44 @@ class Contact(models.Model):
     birthday = models.DateField()
 
 
+# <<<<<<< note_app_two
+# =======
+
+class Tag(models.Model):
+    """
+    Model to store tags for categorizing notes.
+
+    Attributes:
+        name (CharField): The name of the tag. Maximum length of 255 characters.
+    """
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Note(models.Model):
     """
     Model to store notes for users.
 
     Attributes:
         user (ForeignKey): The user to whom this note belongs. Links to the CustomUser model.
+        title (CharField): The title of the note. Maximum length of 300 characters.
         content (TextField): The content of the note.
-        tags (CharField): Tags associated with the note. Maximum length of 255 characters.
+        created_at (DateTimeField): The date and time when the note was created.
+        updated_at (DateTimeField): The date and time when the note was last updated.
+        tags (ManyToManyField): Tags associated with the note. Links to the Tag model.
     """
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    title = models.CharField(max_length=300, null=True)
     content = models.TextField()
-    tags = models.CharField(max_length=255)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField(Tag)
+
+    def __str__(self):
+        return self.content
+
 
 
 def user_directory_path(instance, filename):
@@ -55,6 +82,7 @@ def user_directory_path(instance, filename):
     return f'user_{instance.user.id}/{filename}'
 
 
+# >>>>>>> tasks
 class File(models.Model):
     """
     Model to store files uploaded by users.
