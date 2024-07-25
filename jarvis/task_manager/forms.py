@@ -1,4 +1,5 @@
 from django import forms
+
 from .models import Task, TaskList, Tag
 
 
@@ -23,10 +24,10 @@ class TaskForm(forms.ModelForm):
 
         if new_task_list_name:
             task_list, created = TaskList.objects.get_or_create(name=new_task_list_name, owner=task.owner)
-        elif selected_task_list:
-            task_list = selected_task_list
-        else:
+        elif selected_task_list == 'general':
             task_list, created = TaskList.objects.get_or_create(name='General', owner=task.owner)
+        else:
+            task_list = selected_task_list
 
         task.task_list = task_list
 

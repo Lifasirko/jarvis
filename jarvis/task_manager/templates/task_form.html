@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2>{% if form.instance.pk %}Edit Task{% else %}Create Task{% endif %}</h2>
-<form method="post">
+<form method="post" id="task-form">
     {% csrf_token %}
     {{ form.non_field_errors }}
     <div class="form-group">
@@ -15,7 +15,14 @@
         {{ form.due_date.label_tag }} {{ form.due_date }}
     </div>
     <div class="form-group">
-        {{ form.task_list.label_tag }} {{ form.task_list }}
+        <label for="id_task_list">Task List</label>
+        <select name="task_list" id="id_task_list" class="form-control">
+            {% for task_list in form.fields.task_list.queryset %}
+                <option value="{{ task_list.id }}" {% if task_list.id == form.initial.task_list %}selected{% endif %}>
+                    {{ task_list.name }}
+                </option>
+            {% endfor %}
+        </select>
     </div>
     <div class="form-group">
         {{ form.tags.label_tag }} {{ form.tags }}
@@ -28,4 +35,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </form>
+
+
 {% endblock %}
