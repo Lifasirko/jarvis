@@ -1,10 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{% if form.instance.pk %}Edit Task{% else %}New Task{% endif %}</h2>
+<h2>{% if form.instance.pk %}Edit Task{% else %}Create Task{% endif %}</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
+    {{ form.non_field_errors }}
+    <div class="form-group">
+        {{ form.title.label_tag }} {{ form.title }}
+    </div>
+    <div class="form-group">
+        {{ form.description.label_tag }} {{ form.description }}
+    </div>
+    <div class="form-group">
+        {{ form.due_date.label_tag }} {{ form.due_date }}
+    </div>
+    <div class="form-group">
+        {{ form.task_list.label_tag }} {{ form.task_list }}
+    </div>
+    <div class="form-group">
+        {{ form.tags.label_tag }} {{ form.tags }}
+    </div>
+    <div class="form-group">
+        {{ form.new_task_list.label_tag }} {{ form.new_task_list }}
+    </div>
+    <div class="form-group">
+        {{ form.new_tags.label_tag }} {{ form.new_tags }}
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
 {% endblock %}

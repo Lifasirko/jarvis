@@ -1,11 +1,18 @@
+# task_manager/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Task, TaskList
+from .models import Task, TaskList, Tag
 from .forms import TaskForm, TaskListForm
 
 
 def task_list_view(request):
     task_lists = TaskList.objects.filter(owner=request.user)
-    return render(request, 'task_list.html', {'task_lists': task_lists})
+    tasks = Task.objects.filter(owner=request.user)
+
+    task_list_filter = request.GET.get('task_list')
+    if task_list_filter:
+        tasks = tasks.filter(task_list_id=task_list_filter)
+
+    return render(request, 'task_list.html', {'task_lists': task_lists, 'tasks': tasks})
 
 
 def task_detail_view(request, task_id):
@@ -17,8 +24,7 @@ def task_create_view(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            task = form.save(commit=False)
-            task.owner = request.user
+            task = form.save(commit=False, owner=request.user)
             task.save()
             form.save_m2m()
             return redirect('task_list')
