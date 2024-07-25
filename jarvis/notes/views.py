@@ -5,8 +5,6 @@ from .forms import NoteForm, TagForm
 from django.contrib.auth.decorators import login_required
 
 
-
-
 @login_required
 def note_list(request):
     """

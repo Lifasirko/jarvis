@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from core.models import CustomUser
 
+
 class Tag(models.Model):
     """
     Model to store tags for categorizing notes.

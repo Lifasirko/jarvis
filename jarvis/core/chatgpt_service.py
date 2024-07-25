@@ -1,7 +1,9 @@
 from openai import OpenAI
 import os
 
-api_key = 'sk-proj-TOy9JHjRP0PV8e30WHCfT3BlbkFJD7UnqPMZj3q3KURZHvjq'
+from config.settings import CHAT_GPT_API_KEY
+
+api_key = CHAT_GPT_API_KEY
 client = OpenAI(api_key=api_key)
 
 

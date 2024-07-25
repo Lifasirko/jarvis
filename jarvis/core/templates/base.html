@@ -148,6 +148,7 @@
                 <a class="nav-link" href="{% url 'note_list' %}">Notes</a>
                 <a class="nav-link" href="{% url 'file_list' %}">Files</a>
                 <a class="nav-link" href="{% url 'news' %}">News</a>
+                <a class="nav-link" href="{% url 'task_list' %}">Tasks</a>
                 <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                 <form method="post" action="{% url 'logout' %}" class="d-inline">
                     {% csrf_token %}
