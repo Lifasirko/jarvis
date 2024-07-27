@@ -114,6 +114,16 @@
         <input type="text" name="tag" placeholder="Search tasks by tag..." class="search-input">
         <button type="submit" class="search-button">Search</button>
     </form>
+    <form method="get" action="{% url 'task_manager:task_list' %}" class="search-form">
+        <label for="task_list_filter">Filter by Task List:</label>
+        <select name="task_list_id" id="task_list_filter" class="search-input">
+            <option value="">All Task Lists</option>
+            {% for task_list in task_lists %}
+                <option value="{{ task_list.id }}" {% if task_list.id|stringformat:"s" == selected_task_list %}selected{% endif %}>{{ task_list.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="search-button">Filter</button>
+    </form>
     <div class="action-buttons">
         <a href="{% url 'task_manager:task_create' %}" class="btn-large btn-blue">Add New Task</a>
         <a href="{% url 'task_manager:tag_manage' %}" class="btn-large btn-blue">Tag Manager</a>

@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Task, TaskList, Tag
 from .forms import TaskForm, TaskListForm, TagForm
@@ -9,6 +10,7 @@ from django.db.models import Q
 def task_list_view(request):
     search_query = request.GET.get('q', '')
     tag_query = request.GET.get('tag', '')
+    task_list_id = request.GET.get('task_list_id', None)
 
     tasks = Task.objects.filter(owner=request.user)
 
@@ -18,7 +20,13 @@ def task_list_view(request):
     if tag_query:
         tasks = tasks.filter(tags__name__icontains=tag_query).distinct()
 
-    return render(request, 'task_list.html', {'tasks': tasks})
+    if task_list_id:
+        tasks = tasks.filter(task_list_id=task_list_id)
+
+    task_lists = TaskList.objects.filter(owner=request.user)
+
+    return render(request, 'task_list.html',
+                  {'tasks': tasks, 'task_lists': task_lists, 'selected_task_list': task_list_id})
 
 
 @login_required
@@ -164,3 +172,17 @@ def tag_edit_view(request, tag_id):
     else:
         form = TagForm(instance=tag)
     return render(request, 'tag_form.html', {'form': form})
+
+
+@login_required
+def tasks_in_list_view(request, task_list_id):
+    task_list = get_object_or_404(TaskList, id=task_list_id)
+    tasks = Task.objects.filter(task_list=task_list, owner=request.user)
+    return render(request, 'tasks_in_list.html', {'task_list': task_list, 'tasks': tasks})
+
+
+@login_required
+def check_tasks_in_list(request, task_list_id):
+    task_list = get_object_or_404(TaskList, id=task_list_id, owner=request.user)
+    has_tasks = Task.objects.filter(task_list=task_list).exists()
+    return JsonResponse({'has_tasks': has_tasks})

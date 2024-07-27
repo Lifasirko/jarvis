@@ -15,6 +15,9 @@ urlpatterns = [
     path('tags/manage/', views.tag_manage_view, name='tag_manage'),
     path('tags/create/', views.tag_create_view, name='tag_create'),
     path('tags/delete/<int:tag_id>/', views.tag_delete_view, name='tag_delete'),
-    path('tags/edit/<int:tag_id>/', views.tag_edit_view, name='tag_edit'),  # Додано маршрут для редагування тегів
+    path('tags/edit/<int:tag_id>/', views.tag_edit_view, name='tag_edit'),
     path('task_list/manage/', views.task_list_manage_view, name='task_list_manage'),
+    path('task_list/<int:task_list_id>/tasks/', views.tasks_in_list_view, name='tasks_in_list'),
+    path('task_list/<int:task_list_id>/check_tasks/', views.check_tasks_in_list, name='check_tasks_in_list'),
+
 ]
