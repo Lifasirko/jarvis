@@ -64,6 +64,7 @@
         color: white;
         text-decoration: none;
         font-size: 16px;
+        margin-left: 5px;
     }
 
     .btn-danger:hover {
@@ -77,10 +78,15 @@
         color: white;
         text-decoration: none;
         font-size: 16px;
+        margin-left: 5px;
     }
 
     .btn-secondary:hover {
         background-color: #005fa3;
+    }
+
+    .task-list-item {
+        margin-bottom: 15px;
     }
 
     .modal {
@@ -131,7 +137,7 @@
 <h2>Existing Task Lists</h2>
 <ul>
     {% for task_list in task_lists %}
-        <li>{{ task_list.name }}
+        <li class="task-list-item">{{ task_list.name }}
             <a href="{% url 'task_manager:task_list_edit' task_list.id %}" class="btn-secondary">Edit</a>
             <a href="#" class="btn-danger" onclick="confirmDeleteTaskList({{ task_list.id }}); return false;">Delete</a>
         </li>
