@@ -1,7 +1,8 @@
-# task_manager/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Task, TaskList, Tag
+
 from .forms import TaskForm, TaskListForm
+from .models import Tag
+from .models import Task, TaskList
 
 
 def task_list_view(request):
@@ -25,8 +26,20 @@ def task_create_view(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             task = form.save(commit=False, owner=request.user)
+            task.owner = request.user
             task.save()
-            form.save_m2m()
+
+            new_tags = form.cleaned_data.get('new_tags')
+            selected_tags = form.cleaned_data.get('tags')
+
+            tags = list(selected_tags)
+            if new_tags:
+                tag_names = [name.strip() for name in new_tags.split(',')]
+                new_tags = [Tag.objects.get_or_create(name=name, defaults={'owner': task.owner})[0] for name in
+                            tag_names]
+                tags.extend(new_tags)
+
+            task.tags.set(tags)
             return redirect('task_list')
     else:
         form = TaskForm()
