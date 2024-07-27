@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Upload File</h2>
+<form method="post" enctype="multipart/form-data" id="uploadForm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+</form>
+
+<div id="progressWrapper" style="display: none;">
+    <label for="progressBar">Upload progress:</label>
+    <progress id="progressBar" value="0" max="100" style="width: 100%;"></progress>
+</div>
+
+<script>
+document.getElementById('uploadForm').onsubmit = function(event) {
+    var fileInput = document.querySelector('input[type="file"]');
+    var maxFileSize = {{ max_file_size|default:2621440 }}; // Default 2.5MB in bytes
+
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+        if (file.size > maxFileSize) {
+            alert('File size must be under ' + (maxFileSize / (1024 * 1024)) + ' MB. Current file size is ' + (file.size / (1024 * 1024)).toFixed(2) + ' MB.');
+            event.preventDefault();
+            return false;
+        }
+    }
+
+    var formData = new FormData(this);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', this.action, true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+    xhr.upload.onloadstart = function(e) {
+        document.getElementById('progressWrapper').style.display = 'block';
+    }
+
+    xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+            var percentComplete = (e.loaded / e.total) * 100;
+            document.getElementById('progressBar').value = percentComplete;
+        }
+    }
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            window.location.href = "{% url 'file_list' %}";
+        } else {
+            alert('An error occurred!');
+        }
+    };
+
+    xhr.send(formData);
+    event.preventDefault();
+};
+
+document.querySelector('input[type="file"]').addEventListener('change', function(event) {
+    var fileInput = event.target;
+    var file = fileInput.files[0];
+
+    if (file) {
+        // Set the file name
+        document.querySelector('input[name="name"]').value = file.name;
+
+        // Set the file category based on MIME type
+        var mimeType = file.type;
+        var categoryInput = document.querySelector('select[name="category"]');
+
+        if (mimeType.startsWith('image/')) {
+            categoryInput.value = 'image';
+        } else if (mimeType.startsWith('video/')) {
+            categoryInput.value = 'video';
+        } else if (mimeType === 'application/pdf' || mimeType === 'application/msword' || mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            categoryInput.value = 'document';
+        } else {
+            categoryInput.value = 'other';
+        }
+    }
+});
+</script>
+{% endblock %}

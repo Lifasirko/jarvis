@@ -1,24 +1,82 @@
 {% extends "base.html" %}
-
 {% block content %}
+<style>
+  body {
+    background-color: #004d40;
+    color: #ffffff;
+    font-size: 18px;
+  }
+  h1, h3 {
+    color: #ffffff;
+  }
+  .container {
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  ul li {
+    margin: 10px 0;
+  }
+  a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .social-media {
+    margin-top: 20px;
+  }
+  .social-media a {
+    margin-right: 15px;
+    font-size: 24px;
+    color: #ffffff;
+  }
+  .social-media a:hover {
+    color: #a7ffeb;
+  }
+</style>
+
 {% if user.is_authenticated %}
-<h1>
-    Welcome to Jarvis, {{ user.username }}!
-</h1>
+<h1>Welcome to Jarvis, {{ user.username }}!</h1>
 <p>This is the home page of your personal assistant project.</p>
 <div class="container">
-    <h3>Quick Links</h3>
-    <ul>
-        <li><a href="{% url 'contact_list' %}">Contacts</a></li>
-        <li><a href="{% url 'notes:note_list' %}">Notes</a></li>
-        <li><a href="{% url 'file_list' %}">Files</a></li>
-        <li><a href="{% url 'news' %}">News</a></li>
-    </ul>
+
+  <h3>Quick Links</h3>
+  <ul>
+    <li><a href="{% url 'contact_list' %}">Contacts</a></li>
+    <li><a href="{% url 'note_list' %}">Notes</a></li>
+    <li><a href="{% url 'file_list' %}">Files</a></li>
+    <li><a href="{% url 'news' %}">News</a></li>
+    <li><a href="{% url 'task_list' %}">Tasks</a></li>
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    <input type="text" name="prompt" placeholder="Ask Jarvis" required>
+    <button type="submit">Ask</button>
+  </form>
+  {% if response %}
+  <div class="response">
+    <h3>Response from Jarvis:</h3>
+    <p>{{ response }}</p>
+  </div>
+  {% endif %}
+  <div class="social-media">
+    <a href="https://www.facebook.com" target="_blank" title="Facebook">Facebook</a>
+    <a href="https://www.twitter.com" target="_blank" title="Twitter">Twitter</a>
+    <a href="https://www.instagram.com" target="_blank" title="Instagram">Instagram</a>
+    <a href="https://www.linkedin.com" target="_blank" title="LinkedIn">LinkedIn</a>
+    <a href="https://www.youtube.com" target="_blank" title="YouTube">YouTube</a>
+  </div>
+
 </div>
 {% else %}
-<h1>
-    Welcome to Jarvis
-</h1>
+<h1>Welcome to Jarvis</h1>
 <p>Please <a href="{% url 'login' %}">login</a> to access your personal assistant features.</p>
 {% endif %}
 {% endblock %}

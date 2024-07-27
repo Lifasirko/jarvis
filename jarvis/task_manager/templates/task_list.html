@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Tasks</h2>
+<form method="get">
+    <label for="task_list_filter">Filter by Task List:</label>
+    <select name="task_list" id="task_list_filter" onchange="this.form.submit()">
+        <option value="">All</option>
+        {% for task_list in task_lists %}
+            <option value="{{ task_list.id }}" {% if request.GET.task_list == task_list.id|stringformat:"s" %}selected{% endif %}>{{ task_list.name }}</option>
+        {% endfor %}
+    </select>
+</form>
+<ul>
+    {% for task in tasks %}
+    <li>
+        <a href="{% url 'task_detail' task.id %}">{{ task.title }}</a> - {{ task.task_list.name }}
+        {% if task.is_completed %} (Completed) {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'task_create' %}">Create new task</a>
+{% endblock %}

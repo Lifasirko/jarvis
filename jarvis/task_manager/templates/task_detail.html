@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ task.title }}</h2>
+<p>{{ task.description }}</p>
+<p>Due date: {{ task.due_date }}</p>
+<p>Status: {% if task.is_completed %}Completed{% else %}Not completed{% endif %}</p>
+<p>Tags: 
+    {% for tag in task.tags.all %}
+        {{ tag.name }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+</p>
+<a href="{% url 'task_update' task.id %}">Edit</a>
+<a href="{% url 'task_delete' task.id %}">Delete</a>
+<a href="{% url 'task_list' %}">Back to tasks</a>
+{% endblock %}

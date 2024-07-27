@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a>Create Contact</a>
+<form method="POST" action="{% url 'contacts:add_contact' %}">
+    {% csrf_token %}
+    <div class="form-group pt-2">
+        <label>Name</label>
+        <div>{{ form.name }}</div>
+        <span>{{ form.errors.name }}</span>
+    </div>
+    <div class="form-group pt-2">
+        <label>Address</label>
+        <div>{{ form.address }}</div>
+        <span>{{ form.errors.address }}</span>
+    </div>
+    <div class="form-group pt-2">
+        <label>Phone number</label>
+        <div>{{ form.phone_number }}</div>
+        <span>{{ form.errors.phone_number }}</span>
+    </div>
+    <div class="form-group pt-2">
+        <label>Email</label>
+        <div>{{ form.email }}</div>
+        <span>{{ form.errors.email }}</span>
+    </div>
+    <div class="form-group pt-2">
+        <label>Birthday</label>
+        <div>{{ form.birthday }}</div>
+        <span>{{ form.errors.birthday }}</span>
+    </div>
+    <div class="grid mt-4">
+        <input type="submit" value="Submit" class="btn btn-primary">
+        <a href="{% url 'contacts:contact_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const birthdayField = document.querySelector('input[name="birthday"]');
+      birthdayField.type = 'date';
+    });
+</script>
+{% endblock %}
