@@ -4,9 +4,8 @@ from django.core.management import call_command
 
 from .models import News, Category
 
-# Create your views here.
 
-def news_list(request, page = 1):
+def news_list(request, page=1):
     """
     Handles the news list display with pagination and category filtering.
     
@@ -28,11 +27,11 @@ def news_list(request, page = 1):
     paginator = Paginator(list(news), per_page=per_page)
     contacts_on_page = paginator.page(page)
 
-    return render(request, 'news_list.html', {"all_news" : contacts_on_page, 
+    return render(request, 'news_list.html', {"all_news": contacts_on_page,
                                               "categories": categories})
 
 
-def news_detail(request,title):
+def news_detail(request, title):
     """
     Handles the display of a single news article.
     

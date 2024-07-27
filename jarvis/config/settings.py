@@ -48,6 +48,8 @@ INSTALLED_APPS = [
 
     'task_manager',
 
+    'news',
+
     'django.contrib.sites',
     'allauth',
     'allauth.account',

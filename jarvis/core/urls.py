@@ -2,11 +2,12 @@ from django.contrib.auth.views import PasswordResetDoneView, PasswordResetConfir
 from django.urls import path
 
 from . import views
-from .views import home_view, register_view, login_view, logout_view, file_list_view, news_view, user_list_view, \
+from .views import home_view, register_view, login_view, logout_view, file_list_view, user_list_view, \
     delete_user_view, upload_file_view, delete_file_view, \
     profile_view, change_password_view
 from notes.views import note_list
 from contacts.views import contact_list_view
+from news.views import news_list
 
 urlpatterns = [
     path('', views.chat_view, name='home'),
@@ -37,10 +38,10 @@ urlpatterns = [
     path('files/upload/', upload_file_view, name='upload_file'),
     path('files/delete/<int:file_id>/', delete_file_view, name='delete_file'),
 
-    path('news/', news_view, name='news'),
+    path('news/', news_list, name='news'),
 
     path('users/', user_list_view, name='user_list'),
     path('users/delete/<int:user_id>/', delete_user_view, name='delete_user'),
-    path('news/', news_view, name='news'),
+    # path('news/', news_view, name='news'),
     path('', views.chat_view, name='home'),
 ]

@@ -21,16 +21,16 @@ from .models import File
 
 from django.shortcuts import render
 from .chatgpt_service import get_chatgpt_response
-from .rss_feed import fetch_rss_feed
-import feedparser
+# from .rss_feed import fetch_rss_feed
+# import feedparser
 from django.conf import settings
 
 
-def news_view(request):
-    rss_url = 'https://www.liga.net/news/all/rss.xml'
-    news_items = fetch_rss_feed(rss_url)
-    return render(request, 'news.html', {'news_items': news_items})
-
+# def news_view(request):
+#     rss_url = 'https://www.liga.net/news/all/rss.xml'
+#     news_items = fetch_rss_feed(rss_url)
+#     return render(request, 'news.html', {'news_items': news_items})
+#
 
 def chat_view(request):
     response = None
@@ -38,6 +38,7 @@ def chat_view(request):
         prompt = request.POST.get('prompt')
         response = get_chatgpt_response(prompt)
     return render(request, 'home.html', {'response': response})
+
 
 def home_view(request):
     """
@@ -187,7 +188,6 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
 #         HttpResponse: The rendered contact list page.
 #     """
 #     return render(request, 'contact_list.html')
-
 
 @login_required
 def file_list_view(request):
