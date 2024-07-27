@@ -225,7 +225,6 @@
                 <a class="nav-link" href="{% url 'file_list' %}">Files</a>
                 <a class="nav-link" href="{% url 'news' %}">News</a>
                 <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-                
                 <form method="post" action="{% url 'logout' %}" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="logout-button">Logout</button>
@@ -239,7 +238,7 @@
         <button id="theme-toggle" class="btn btn-secondary">Theme</button>
         <div class="current-time" id="current-time"></div>
         <div class="welcome-container">
-            
+            <!-- Welcome message or other content can go here -->
         </div>
         {% block content %}
         {% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Новини</h2>
+<ul>
+    {% for item in news_items %}
+        <li>
+            <a href="{{ item.link }}" target="_blank">{{ item.title }}</a>
+            <p>{{ item.summary }}</p>
+            <small>{{ item.published }}</small>
+        </li>
+    {% empty %}
+        <li>Немає новин для відображення.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

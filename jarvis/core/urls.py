@@ -40,4 +40,6 @@ urlpatterns = [
 
     path('users/', user_list_view, name='user_list'),
     path('users/delete/<int:user_id>/', delete_user_view, name='delete_user'),
+    path('news/', news_view, name='news'),
+    path('', views.chat_view, name='home'),
 ]
