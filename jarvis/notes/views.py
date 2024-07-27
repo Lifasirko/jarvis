@@ -89,9 +89,9 @@ def note_create(request):
         form = NoteForm(request.POST)
         if form.is_valid():
             note = form.save(commit=False)
-            note.user = request.user 
+            note.user = request.user
             note.save()
-            form.save_m2m() 
+            form.save_m2m()
             return redirect('notes:note_list')
     else:
         form = NoteForm()
@@ -157,8 +157,6 @@ def note_edit(request, pk):
     })
 
 
-
-
 @login_required
 def tag_manage(request, delete_tag_id=None):
     """
@@ -202,7 +200,7 @@ def tag_manage(request, delete_tag_id=None):
                 return redirect('notes:tag_manage')
     else:
         form = TagForm()
-        
+
         if delete_tag_id:
             tag = get_object_or_404(Tag, pk=delete_tag_id)
             return render(request, 'notes/tag_confirm_delete.html', {'tag': tag})
@@ -211,6 +209,36 @@ def tag_manage(request, delete_tag_id=None):
         tags = Tag.objects.filter(name__icontains=search_query)
 
     return render(request, 'notes/tag_manage.html', {'form': form, 'tags': tags, 'search_query': search_query})
+
+
+@login_required
+def tag_create(request):
+    """
+    Handles the creation of a new tag.
+    This view requires the user to be logged in.
+
+    Args:
+        request (HttpRequest): The request object used to generate this response.
+
+    Returns:
+        HttpResponse: The rendered tag creation form page.
+
+    On POST request:
+        - It processes the submitted form data.
+        - If the form is valid, it creates a new tag, saves it,
+          and redirects to the tag management page.
+
+    On GET request:
+        - It renders an empty tag creation form.
+    """
+    if request.method == 'POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('notes:tag_manage')
+    else:
+        form = TagForm()
+    return render(request, 'notes/tag_form.html', {'form': form})
 
 
 @login_required
