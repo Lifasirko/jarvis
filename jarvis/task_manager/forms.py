@@ -54,3 +54,9 @@ class TaskListForm(forms.ModelForm):
     class Meta:
         model = TaskList
         fields = ['name']
+
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = ['name']

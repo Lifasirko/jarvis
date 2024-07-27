@@ -1,99 +1,137 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.shortcuts import render, get_object_or_404, redirect
 
-from .forms import TaskForm, TaskListForm
-from .models import Tag
-from .models import Task, TaskList
+from .forms import TaskForm, TaskListForm, TagForm
+from .models import Task, TaskList, Tag
 
 
+@login_required
 def task_list_view(request):
-    task_lists = TaskList.objects.filter(owner=request.user)
+    search_query = request.GET.get('q', '')
+    tag_query = request.GET.get('tag', '')
+
     tasks = Task.objects.filter(owner=request.user)
 
-    task_list_filter = request.GET.get('task_list')
-    if task_list_filter:
-        tasks = tasks.filter(task_list_id=task_list_filter)
+    if search_query:
+        tasks = tasks.filter(Q(title__icontains=search_query))
 
-    return render(request, 'task_list.html', {'task_lists': task_lists, 'tasks': tasks})
+    if tag_query:
+        tasks = tasks.filter(tags__name__icontains=tag_query).distinct()
+
+    return render(request, 'task_list.html', {'tasks': tasks})
 
 
+@login_required
 def task_detail_view(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     return render(request, 'task_detail.html', {'task': task})
 
 
+@login_required
 def task_create_view(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            task = form.save(commit=False, owner=request.user)
+            task = form.save(commit=False)
             task.owner = request.user
             task.save()
-
-            new_tags = form.cleaned_data.get('new_tags')
-            selected_tags = form.cleaned_data.get('tags')
-
-            tags = list(selected_tags)
-            if new_tags:
-                tag_names = [name.strip() for name in new_tags.split(',')]
-                new_tags = [Tag.objects.get_or_create(name=name, defaults={'owner': task.owner})[0] for name in
-                            tag_names]
-                tags.extend(new_tags)
-
-            task.tags.set(tags)
-            return redirect('task_list')
+            form.save_m2m()
+            return redirect('task_manager:task_list')
     else:
         form = TaskForm()
     return render(request, 'task_form.html', {'form': form})
 
 
+@login_required
 def task_update_view(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
             form.save()
-            return redirect('task_detail', task_id=task.id)
+            return redirect('task_manager:task_list')
     else:
         form = TaskForm(instance=task)
     return render(request, 'task_form.html', {'form': form})
 
 
+@login_required
 def task_delete_view(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     if request.method == 'POST':
         task.delete()
-        return redirect('task_list')
+        return redirect('task_manager:task_list')
     return render(request, 'task_confirm_delete.html', {'task': task})
 
 
+@login_required
 def task_list_create_view(request):
     if request.method == 'POST':
         form = TaskListForm(request.POST)
         if form.is_valid():
-            task_list = form.save(commit=False)
-            task_list.owner = request.user
-            task_list.save()
-            return redirect('task_list')
+            form.save()
+            return redirect('task_manager:task_list')
     else:
         form = TaskListForm()
     return render(request, 'task_list_form.html', {'form': form})
 
 
+@login_required
 def task_list_edit_view(request, task_list_id):
     task_list = get_object_or_404(TaskList, id=task_list_id)
     if request.method == 'POST':
         form = TaskListForm(request.POST, instance=task_list)
         if form.is_valid():
             form.save()
-            return redirect('task_list')
+            return redirect('task_manager:task_list')
     else:
         form = TaskListForm(instance=task_list)
     return render(request, 'task_list_form.html', {'form': form})
 
 
+@login_required
 def task_list_delete_view(request, task_list_id):
     task_list = get_object_or_404(TaskList, id=task_list_id)
     if request.method == 'POST':
-        task_list.delete()
-        return redirect('task_list')
+        if not Task.objects.filter(task_list=task_list).exists():
+            task_list.delete()
+            return redirect('task_manager:task_list')
     return render(request, 'task_list_confirm_delete.html', {'task_list': task_list})
+
+
+@login_required
+def tag_manage_view(request):
+    if request.method == 'POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('task_manager:tag_manage')
+    else:
+        form = TagForm()
+
+    search_query = request.GET.get('search', '')
+    tags = Tag.objects.filter(name__icontains=search_query)
+
+    return render(request, 'tag_manage.html', {'form': form, 'tags': tags, 'search_query': search_query})
+
+
+@login_required
+def tag_create_view(request):
+    if request.method == 'POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('task_manager:tag_manage')
+    else:
+        form = TagForm()
+    return render(request, 'tag_form.html', {'form': form})
+
+
+@login_required
+def tag_delete_view(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
+    if request.method == 'POST':
+        tag.delete()
+        return redirect('task_manager:tag_manage')
+    return render(request, 'tag_confirm_delete.html', {'tag': tag})

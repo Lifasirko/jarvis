@@ -27,7 +27,7 @@ urlpatterns = [
                   path('', include('contacts.urls')),
                   path('notes/', include('notes.urls')),
                   path('accounts/', include('allauth.urls')),
-                  path('tasks/', include('task_manager.urls')),
+                  path('tasks/', include('task_manager.urls', namespace='task_manager')),
                   path('news/', include('news.urls')),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
