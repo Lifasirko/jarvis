@@ -7,63 +7,59 @@ from django.db.models import Q
 from .models import Contact
 from .forms import ContactForm
 
+
 # Create your views here.
 
 @login_required
 def contact_list_view(request, page=1):
-    """
-    Renders the contact list page. This view requires the user to be logged in.
+    query = request.GET.get('query')
+    today = date.today()
+    next_week = today + timedelta(days=7)
 
-    Args:
-    request (HttpRequest): The request object used to generate this response.
-    page (int): The page number of the contacts to display. Defaults to 1.
+    # Контакти з днями народження протягом найближчого тижня
+    upcoming_birthdays = Contact.objects.filter(
+        user=request.user,
+        birthday__range=[today, next_week]
+    ).order_by('birthday')
 
-    Returns:
-    HttpResponse: The rendered contact list page.
+    # Додамо відлагоджувальні повідомлення
+    print(f"Upcoming birthdays: {upcoming_birthdays}")
 
-    Description:
-    This function retrieves all contacts associated with the logged-in user,
-    paginates them (10 contacts per page), and renders the contact list template
-    with the contacts for the specified page.
-    """
+    # Всі інші контакти
     contacts = Contact.objects.filter(user=request.user)
+    if query:
+        contacts = contacts.filter(Q(name__icontains=query) | Q(phone_number__icontains=query))
+
     per_page = 10
-    paginator = Paginator(list(contacts), per_page=per_page)
+    paginator = Paginator(contacts, per_page)
     contacts_on_page = paginator.page(page)
-    return render(request, 'contact_list.html', {"contacts" : contacts_on_page})
+
+    # Додамо відлагоджувальні повідомлення
+    print(f"All contacts: {contacts_on_page}")
+
+    return render(request, 'contact_list.html', {
+        'upcoming_birthdays': upcoming_birthdays,
+        'contacts': contacts_on_page,
+        'query': query
+    })
 
 
 @login_required
 def add_contact_view(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
-
         if form.is_valid():
             contact = form.save(commit=False)
             contact.user = request.user
             contact.save()
             return redirect('contacts:contact_list')
-        else:
-            return render(request, 'add_contact.html', {'form': form})
-
-    return render(request, 'add_contact.html', {'form': ContactForm()})
+    else:
+        form = ContactForm()
+    return render(request, 'add_contact.html', {'form': form})
 
 
 @login_required
 def update_contact_view(request, contact_id):
-    """
-    Handles the creation of a new contact.
-
-    This view function manages both GET and POST requests for adding a new contact.
-    It requires the user to be logged in.
-
-    Args:
-    request (HttpRequest): The request object containing metadata about the request.
-
-    Returns:
-    HttpResponse: Either a redirect to the contact list upon successful contact creation,
-                  or the rendered 'add_contact.html' template with a form.
-    """
     contact = get_object_or_404(Contact, id=contact_id, user=request.user)
     if request.method == 'POST':
         form = ContactForm(request.POST, instance=contact)
@@ -116,7 +112,7 @@ def fulldata_contact_view(request, contact_id):
     HttpResponse: The rendered 'fulldata_contact.html' template with the contact's full details.
     """
     contact = get_object_or_404(Contact, id=contact_id, user=request.user)
-    return render(request, 'fulldata_contact.html', {"contact" : contact})
+    return render(request, 'fulldata_contact.html', {"contact": contact})
 
 
 @login_required
@@ -145,7 +141,7 @@ def search_contacts(request):
     if query:
         contacts = Contact.objects.filter(
             Q(user=request.user) &
-            (Q(name__icontains=query) | 
+            (Q(name__icontains=query) |
              Q(phone_number__icontains=query))
         )
     else:
@@ -158,6 +154,7 @@ def search_contacts(request):
             birthday_this_year = birthday_this_year.replace(year=today.year + 1)
 
         if birthday_this_year == end_date:
-                upcoming_contacts.append(contact)
+            upcoming_contacts.append(contact)
 
-    return render(request, 'contact_list.html', {"contacts" : upcoming_contacts,  "query": query, "birthday_filter": days})
+    return render(request, 'contact_list.html',
+                  {"contacts": upcoming_contacts, "query": query, "birthday_filter": days})

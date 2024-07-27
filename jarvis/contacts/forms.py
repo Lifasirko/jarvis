@@ -4,6 +4,7 @@ import datetime
 
 from .models import Contact
 
+
 class ContactForm(forms.ModelForm):
     name = forms.CharField(
         required=True,
@@ -30,11 +31,11 @@ class ContactForm(forms.ModelForm):
         fields = ['name', 'address', 'phone_number', 'email', 'birthday']
         exclude = ['user']
 
-    def clean_name(self):
-        name = self.cleaned_data.get('name')
-        if not name.isalpha():
-            raise forms.ValidationError("Name should only contain alphabetic characters.")
-        return name
+    # def clean_name(self):
+    #     name = self.cleaned_data.get('name')
+    #     if not name.isalpha():
+    #         raise forms.ValidationError("Name should only contain alphabetic characters.")
+    #     return name
 
     def clean_birthday(self):
         birthday = self.cleaned_data.get('birthday')

@@ -168,17 +168,17 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
 
 
 @login_required
-def contact_list_view(request):
-    """
-    Renders the contact list page. This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-
-    Returns:
-        HttpResponse: The rendered contact list page.
-    """
-    return render(request, 'contact_list.html')
+# def contact_list_view(request):
+#     """
+#     Renders the contact list page. This view requires the user to be logged in.
+#
+#     Args:
+#         request (HttpRequest): The request object used to generate this response.
+#
+#     Returns:
+#         HttpResponse: The rendered contact list page.
+#     """
+#     return render(request, 'contact_list.html')
 
 
 @login_required
