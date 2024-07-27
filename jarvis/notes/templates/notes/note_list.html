@@ -1,32 +1,28 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Note List</title>
+{% block title %}
+    Note List
+{% endblock %}
+
+{% block extra_css %}
     <style>
         body {
             background-color: #000;
         }
     </style>
     <link rel="stylesheet" href="{% static 'css/notes.css' %}">
+{% endblock %}
 
-</head>
-<body>
+{% block content %}
     <h1>Notes</h1>
     <form method="get" action="{% url 'notes:note_list' %}">
-        <input type="text" name="q" placeholder="Search notes by title...">
-        <button type="submit">Search</button>
-    </form>
-    <form method="get" action="{% url 'notes:note_list' %}">
-        <input type="text" name="tag" placeholder="Search notes by tag...">
+        <input type="text" name="search" placeholder="Search notes by title or tag...">
         <button type="submit">Search</button>
     </form>
     <a href="{% url 'notes:note_create' %}">Add New Note</a>
-    <p>    </p>
-    <a href="{% url 'notes:tag_create' %}">Add New Tag</a>
-
+    <p></p>
+    <a href="{% url 'notes:tag_manage' %}">Edit Tags</a>
 
     {% if notes %}
         <table>
@@ -60,5 +56,4 @@
             </tbody>
         </table>
     {% endif %}
-</body>
-</html>
+{% endblock %}

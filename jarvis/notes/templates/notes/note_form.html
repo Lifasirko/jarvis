@@ -1,19 +1,58 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{% if note.pk %}Edit{% else %}New{% endif %} Note</title>
+{% block title %}
+    {% if note %}Edit{% else %}New{% endif %} Note
+{% endblock %}
+
+{% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/notes.css' %}">
-</head>
-<body>
-    <h1>{% if note.pk %}Edit{% else %}New{% endif %} Note</h1>
-    <form method="post">
+    <style>
+        .tag-list {
+            max-height: 200px; /* Adjust the height as needed */
+            overflow-y: auto;
+            border: 1px solid #ccc; /* Optional: add border for better visibility */
+            padding: 10px; /* Optional: add padding for better appearance */
+            margin-top: 20px; /* Optional: add margin to separate from other content */
+            text-align: left; /* Align text to the left */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>{% if note %}Edit{% else %}New{% endif %} Note</h1>
+    <h2>Tags</h2>
+    <!-- Search form -->
+    <form method="get" action="{% url 'notes:note_create' %}">
+        <input type="text" name="search" placeholder="Search tags..." value="{{ search_query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Note form -->
+    <form method="post" action="{% if note %}{% url 'notes:note_edit' note.pk %}{% else %}{% url 'notes:note_create' %}{% endif %}">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">{% if note.pk %}Update{% else %}Save{% endif %}</button>
+
+        <div class="tag-list">
+            {% for tag in tags %}
+                <label>
+                    <input type="checkbox" name="tags" value="{{ tag.id }}"
+                        {% if tag.id in selected_tags %}checked{% endif %}>
+                    {{ tag.name }}
+                </label><br>
+            {% endfor %}
+        </div>
+
+        <div>
+            <label for="{{ form.title.id_for_label }}">Title:</label>
+            {{ form.title }}
+        </div>
+        
+        <div>
+            <label for="{{ form.content.id_for_label }}">Content:</label>
+            {{ form.content }}
+        </div>
+
+        <button type="submit">{% if note %}Update{% else %}Save{% endif %}</button>
     </form>
     <a href="{% url 'notes:note_list' %}">Back to Notes</a>
-</body>
-</html>
+{% endblock %}
