@@ -1,7 +1,57 @@
 {% extends "base.html" %}
 
+{% block title %}Add Contact{% endblock %}
+
 {% block content %}
-<a>Create Contact</a>
+<style>
+    .form-container {
+        text-align: center;
+        border: 2px solid #00ffcc;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #2e2e2e;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    .form-group label {
+        display: block;
+        color: #00ffcc;
+        font-weight: bold;
+    }
+    .form-group div {
+        margin-top: 5px;
+    }
+    .form-group span {
+        color: #ff6b6b;
+        font-size: 0.875em;
+    }
+    input[type="submit"], .btn-secondary {
+        background-color: #00aaff;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: white;
+    }
+    input[type="submit"]:hover, .btn-secondary:hover {
+        background-color: #0077cc;
+    }
+    .grid {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+</style>
+
+<div class="form-container">
+    <h1>Add New Contact</h1>
 <form method="POST" action="{% url 'contacts:add_contact' %}">
     {% csrf_token %}
     <div class="form-group pt-2">
