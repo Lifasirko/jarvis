@@ -59,7 +59,7 @@
         }
     </style>
 
-    <h1>{% if note.pk %}Edit{% else %}New{% endif %} Note</h1>
+    <h1>{% if note.pk %}Edit{% else %}New{% endif %} Tags</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

@@ -56,8 +56,9 @@
 
     <form method="POST">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Delete</button>
-        <a href="{% url 'contacts:contact_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn-danger">Delete</button>
+        <a href="{% url 'contacts:contact_list' %}" class="btn-secondary">Cancel</a>
     </form>
+</div>
 
 {% endblock %}

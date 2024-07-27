@@ -21,6 +21,15 @@ from .models import File
 
 from django.shortcuts import render
 from .chatgpt_service import get_chatgpt_response
+from .rss_feed import fetch_rss_feed
+import feedparser
+from django.conf import settings
+
+
+def news_view(request):
+    rss_url = 'https://www.liga.net/news/all/rss.xml'
+    news_items = fetch_rss_feed(rss_url)
+    return render(request, 'news.html', {'news_items': news_items})
 
 
 def chat_view(request):
@@ -29,7 +38,6 @@ def chat_view(request):
         prompt = request.POST.get('prompt')
         response = get_chatgpt_response(prompt)
     return render(request, 'home.html', {'response': response})
-
 
 def home_view(request):
     """
@@ -296,18 +304,18 @@ def delete_file_view(request, file_id):
     return render(request, 'confirm_delete.html', {'file': file})
 
 
-@login_required
-def news_view(request):
-    """
-    Renders the news page. This view requires the user to be logged in.
+# @login_required
+# def news_view(request):
+#     """
+#     Renders the news page. This view requires the user to be logged in.
 
-    Args:
-        request (HttpRequest): The request object used to generate this response.
+#     Args:
+#         request (HttpRequest): The request object used to generate this response.
 
-    Returns:
-        HttpResponse: The rendered news page.
-    """
-    return render(request, 'news.html')
+#     Returns:
+#         HttpResponse: The rendered news page.
+#     """
+#     return render(request, 'news.html')
 
 
 @login_required
