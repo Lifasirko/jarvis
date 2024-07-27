@@ -1,55 +1,189 @@
 {% extends "base.html" %}
 
+{% block title %}Birthday Countdown{% endblock %}
+
 {% block content %}
+<style>
+    #container {
+        text-align: center;
+        border: 2px solid #00aaff;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #2e2e2e;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        transition: background-color 0.3s, color 0.3s;
+    }
 
-<form method="GET" action="{% url 'contacts:search_contacts' %}">
-    <input type="text" name="query" value="{{ query | default_if_none:'' }}" placeholder="Search by name or phone">
-    <label for="birthday_range">Days until birthday:</label>
-    <input type="range" id="birthday_range" name="birthday_filter" min="0" max="364" value="{{ birthday_filter | default:'364' }}" oninput="this.nextElementSibling.value = this.value">
-    <output>{{ birthday_filter | default:'364' }}</output>
+    .light-mode #container {
+        background-color: #ffffff;
+        color: #000000;
+    }
 
-    <button type="submit">Search</button>
-</form>
+    button, input {
+        background-color: #00aaff;
+        border: none;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: white;
+    }
 
-<a href="{% url 'contacts:add_contact' %}" class="btn btn-primary">Add Contact</a>
+    button:hover {
+        background-color: #0077cc;
+    }
 
-{% if contacts %}
+    .light-mode button, .light-mode input {
+        background-color: #0077cc;
+        color: white;
+    }
 
-{% for contact in contacts %}
+    input {
+        width: calc(100% - 22px);
+        margin-bottom: 10px;
+    }
 
-<div class="contacts mt-2">
-    <a href="{% url 'contacts:fulldata_contact' contact.id %}" class="button">
-        <span class="text" itemprop="text">{{contact.name}}</span>
-        <span class="text" itemprop="text">{{contact.phone_number}}</span>
-        <a href="{% url 'contacts:update_contact' contact.id %}" class="btn btn-primary">Update</a>
-        <a href="{% url 'contacts:delete_contact' contact.id %}" class="btn btn-secondary">Delete</a>
-    </a>
-</div>
+    .form-group {
+        margin-bottom: 15px;
+    }
 
-{% endfor %}
+    .btn-primary {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+    }
 
-{% else %}
+    .btn-primary:hover {
+        background-color: #388e3c;
+    }
 
-    <p>No contacts found matching your search.</p>
-    
-{% endif %}
+    .btn-secondary {
+        background-color: #0077cc;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+    }
 
-<nav>
-    <div class="pager">
-        <span class="previous">
-            <a class="{% if not contacts.has_previous %} disabled {% endif %}"
-            href="{% if contacts.has_previous %} {% url 'contacts:contact_list' page=contacts.previous_page_number %} {% else %} # {% endif %}">
-            <span aria-hidden="true">←</span>
-            Previous</a>
-        </span>
-       <span class="next">
-            <a class="{% if not contacts.has_next %} disabled {% endif %}"
-            href="{% if contacts.has_next %} {% url 'contacts:contact_list' page=contacts.next_page_number %} {% else %} # {% endif %}">Next
-            <span aria-hidden="true">→</span></a>
-       </span>
+    .btn-secondary:hover {
+        background-color: #005fa3;
+    }
+
+    .btn-danger {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #cc0000;
+    }
+
+    .grid {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .mt-4 {
+        margin-top: 20px;
+    }
+</style>
+
+<div id="container">
+    <input type="text" id="search" placeholder="Search by name">
+    <button id="searchButton">Search</button>
+    <h1>Days until birthday:</h1>
+    <div>
+        <button id="decrease">-</button>
+        <span id="days">364</span>
+        <button id="increase">+</button>
     </div>
-</nav>
-
+    <p id="birthdayMessage">No contacts found matching your search.</p>
+    <div>
+        <button id="previous">Previous</button>
+        <button id="next">Next</button>
+    </div>
+    <div class="grid mt-4">
+        <a href="{% url 'contacts:add_contact' %}" class="btn-primary">Create Contact</a>
+        <a href="{% url 'contacts:contact_list' %}" class="btn-primary">Contact List</a>
+    </div>
+    <div class="grid mt-4">
+        <a href="{% url 'contacts:delete_contact' contact_id=1 %}" class="btn-danger">Delete Contact</a>
+    </div>
+    
 </div>
 
+<script>
+    let daysElement = document.getElementById("days");
+    let birthdayMessage = document.getElementById("birthdayMessage");
+    let searchInput = document.getElementById("search");
+    let days = parseInt(daysElement.textContent);
+    let currentIndex = 0;
+
+    function updateDays() {
+        daysElement.textContent = days;
+        birthdayMessage.textContent = `Days until birthday: ${days}`;
+    }
+
+    document.getElementById("increase").addEventListener("click", () => {
+        days += 1;
+        updateDays();
+    });
+
+    document.getElementById("decrease").addEventListener("click", () => {
+        if (days > 0) {
+            days -= 1;
+            updateDays();
+        }
+    });
+
+    document.getElementById("searchButton").addEventListener("click", () => {
+        birthdayMessage.textContent = `Days until birthday: ${days}`;
+    });
+
+    document.getElementById("previous").addEventListener("click", () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            days -= 1;
+            updateDays();
+        }
+    });
+
+    document.getElementById("next").addEventListener("click", () => {
+        if (currentIndex < 364) {
+            currentIndex++;
+            days += 1;
+            updateDays();
+        }
+    });
+
+    document.getElementById("themeToggle").addEventListener("click", () => {
+        document.body.classList.toggle("light-mode");
+        localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
+    });
+
+    // Load theme from localStorage
+    if (localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light-mode");
+    }
+
+    updateDays();
+</script>
 {% endblock %}
