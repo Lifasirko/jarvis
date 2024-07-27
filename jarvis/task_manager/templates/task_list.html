@@ -116,8 +116,8 @@
     </form>
     <div class="action-buttons">
         <a href="{% url 'task_manager:task_create' %}" class="btn-large btn-blue">Add New Task</a>
-        <a href="{% url 'task_manager:tag_create' %}" class="btn-large btn-blue">Add New Tag</a>
-        <a href="{% url 'task_manager:task_list_create' %}" class="btn-large btn-blue">Add New Task List</a>
+        <a href="{% url 'task_manager:tag_manage' %}" class="btn-large btn-blue">Tag Manager</a>
+        <a href="{% url 'task_manager:task_list_manage' %}" class="btn-large btn-blue">Task List Manager</a>
     </div>
 
     {% if tasks %}
