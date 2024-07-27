@@ -20,9 +20,10 @@ def contact_list_view(request, page=1):
     # Контакти з днями народження протягом найближчого тижня
     upcoming_birthdays = []
     for contact in contacts:
-        birthday_this_year = contact.birthday.replace(year=today.year)
-        if today <= birthday_this_year <= next_week:
-            upcoming_birthdays.append(contact)
+        if contact.birthday:
+            birthday_this_year = contact.birthday.replace(year=today.year)
+            if today <= birthday_this_year <= next_week:
+                upcoming_birthdays.append(contact)
 
     # Додамо відлагоджувальні повідомлення
     print(f"Upcoming birthdays: {upcoming_birthdays}")

@@ -23,7 +23,7 @@ class ContactForm(forms.ModelForm):
         required=True
     )
     birthday = forms.DateField(
-        required=True
+        required=False
     )
 
     class Meta:
@@ -39,7 +39,6 @@ class ContactForm(forms.ModelForm):
 
     def clean_birthday(self):
         birthday = self.cleaned_data.get('birthday')
-        print(birthday)
-        if birthday > datetime.date.today():
+        if birthday and birthday > datetime.date.today():
             raise forms.ValidationError("Birthday cannot be in the future.")
         return birthday
