@@ -3,6 +3,7 @@ from .models import Note, Tag
 from core.models import CustomUser
 from .forms import NoteForm, TagForm
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 
 
@@ -10,27 +11,32 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def note_list(request):
     """
-    Renders the note list page with the ability to filter notes by title and tags.
+    Renders a list of notes, optionally filtered by a search query.
     This view requires the user to be logged in.
 
     Args:
         request (HttpRequest): The request object used to generate this response.
+
     Returns:
-        HttpResponse: The rendered note list page with the notes.
+        HttpResponse: The rendered note list page, with optional search results.
+    
+    The function checks for a 'search' parameter in the GET request. If a search query is provided,
+    it filters the notes by title or tags, displaying only the notes that match the search criteria.
+    If no search query is provided, it displays all notes.
+
+    Context:
+        notes (QuerySet): The queryset of notes to be displayed, either filtered by the search query
+                          or all notes if no search query is provided.
     """
-    query = request.GET.get('q', '')
-    tag = request.GET.get('tag', '')
-    notes = Note.objects.filter(user=request.user)
-
-    if query:
-        notes = notes.filter(title__icontains=query)
-    if tag:
-        notes = notes.filter(tags__name__icontains=tag)
-
+    search_query = request.GET.get('search', '')
+    if search_query:
+        notes = Note.objects.filter(
+            Q(title__icontains=search_query) | Q(tags__name__icontains=search_query)
+        ).distinct()
+    else:
+        notes = Note.objects.all()
     context = {
-        'notes': notes,
-        'query': query,
-        'selected_tag': tag,
+        'notes': notes
     }
     return render(request, 'notes/note_list.html', context)
 
@@ -55,57 +61,59 @@ def note_detail(request, pk):
 @login_required
 def note_create(request):
     """
-    Renders the note creation form and handles the creation of a new note.
+    Handles the creation of a new note.
     This view requires the user to be logged in.
 
     Args:
         request (HttpRequest): The request object used to generate this response.
 
     Returns:
-        HttpResponse: Redirects to the note list page after successful creation.
-        HttpResponse: The rendered note creation form page if the form is invalid.
+        HttpResponse: The rendered note creation form page.
+    
+    On POST request:
+        - It processes the submitted form data.
+        - If the form is valid, it creates a new note, associates it with the logged-in user, saves it,
+          and redirects to the note list page.
+    
+    On GET request:
+        - It renders an empty note creation form.
+
+    Additionally, it handles searching for tags based on a 'search' parameter in the GET request.
+
+    Context:
+        form (NoteForm): The form used for creating a new note.
+        note (None): Placeholder for note, set to None for creation.
+        tags (QuerySet): The queryset of tags filtered by the search query.
+        search_query (str): The search query for filtering tags.
+        selected_tags (list): List of selected tags, set to empty for creation.
     """
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
             note = form.save(commit=False)
-            note.user = request.user
+            note.user = request.user 
             note.save()
-            tags = form.cleaned_data['tags']
-            note.tags.set(tags)
+            form.save_m2m() 
             return redirect('notes:note_list')
     else:
         form = NoteForm()
-    return render(request, 'notes/note_form.html', {'form': form})
 
+    search_query = request.GET.get('search', '')
+    tags = Tag.objects.filter(name__icontains=search_query)
 
-@login_required
-def tag_create(request):
-    """
-    Renders the tag creation form and handles the creation of a new tag.
-    This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-
-    Returns:
-        HttpResponse: Redirects to the note list page after successful creation.
-        HttpResponse: The rendered tag creation form page if the form is invalid.
-    """
-    if request.method == 'POST':
-        form = TagForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('notes:note_list')
-    else:
-        form = TagForm()
-    return render(request, 'notes/tag_form.html', {'form': form})
+    return render(request, 'notes/note_form.html', {
+        'form': form,
+        'note': None,
+        'tags': tags,
+        'search_query': search_query,
+        'selected_tags': []
+    })
 
 
 @login_required
 def note_edit(request, pk):
     """
-    Renders the note edit form and handles the update of an existing note.
+    Handles the editing of an existing note.
     This view requires the user to be logged in.
 
     Args:
@@ -113,10 +121,23 @@ def note_edit(request, pk):
         pk (int): The primary key of the note to be edited.
 
     Returns:
-        HttpResponse: Redirects to the note list page after successful update.
-        HttpResponse: The rendered note edit form page if the form is invalid.
+        HttpResponse: The rendered note edit form page.
+    
+    On POST request:
+        - Updates the existing note with the submitted form data and redirects to the note list page.
+
+    On GET request:
+        - Renders the edit form pre-filled with the note's current data.
+
+    Context:
+        form (NoteForm): The form for editing the note.
+        note (Note): The note being edited.
+        tags (QuerySet): Tags filtered by the search query.
+        search_query (str): The search query for filtering tags.
+        selected_tags (list): IDs of tags currently associated with the note.
     """
     note = get_object_or_404(Note, pk=pk)
+
     if request.method == 'POST':
         form = NoteForm(request.POST, instance=note)
         if form.is_valid():
@@ -124,7 +145,74 @@ def note_edit(request, pk):
             return redirect('notes:note_list')
     else:
         form = NoteForm(instance=note)
-    return render(request, 'notes/note_form.html', {'form': form})
+
+    search_query = request.GET.get('search', '')
+    tags = Tag.objects.filter(name__icontains=search_query)
+    note_tags = note.tags.values_list('id', flat=True)
+
+    return render(request, 'notes/note_form.html', {
+        'form': form,
+        'note': note,
+        'tags': tags,
+        'search_query': search_query,
+        'selected_tags': note_tags
+    })
+
+
+
+
+@login_required
+def tag_manage(request, delete_tag_id=None):
+    """
+    Manages tags, including creation, deletion, and searching.
+    This view requires the user to be logged in.
+
+    Args:
+        request (HttpRequest): The request object used to generate this response.
+        delete_tag_id (int, optional): The ID of the tag to be deleted.
+
+    Returns:
+        HttpResponse: The rendered tag management page or confirmation page for deletion.
+
+    On POST request with delete_tag_id:
+        - Deletes the specified tag and redirects to the tag management page.
+
+    On POST request without delete_tag_id:
+        - Creates a new tag with the submitted form data and redirects to the tag management page.
+
+    On GET request with delete_tag_id:
+        - Renders a confirmation page for deleting the specified tag.
+
+    On GET request without delete_tag_id:
+        - Renders the tag management page with a search functionality.
+
+    Context:
+        form (TagForm): The form for creating or updating tags.
+        tags (QuerySet): Tags filtered by the search query.
+        search_query (str): The search query for filtering tags.
+        tag (Tag, optional): The tag to be deleted (for confirmation page).
+    """
+    if request.method == 'POST':
+        if delete_tag_id:
+            tag = get_object_or_404(Tag, pk=delete_tag_id)
+            tag.delete()
+            return redirect('notes:tag_manage')
+        else:
+            form = TagForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('notes:tag_manage')
+    else:
+        form = TagForm()
+        
+        if delete_tag_id:
+            tag = get_object_or_404(Tag, pk=delete_tag_id)
+            return render(request, 'notes/tag_confirm_delete.html', {'tag': tag})
+
+        search_query = request.GET.get('search', '')
+        tags = Tag.objects.filter(name__icontains=search_query)
+
+    return render(request, 'notes/tag_manage.html', {'form': form, 'tags': tags, 'search_query': search_query})
 
 
 @login_required
