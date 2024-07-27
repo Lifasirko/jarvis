@@ -33,13 +33,13 @@
     <div class="pager">
         <span class="previous">
             <a class="{% if not all_news.has_previous %} disabled {% endif %}"
-            href="{% if all_news.has_previous %} {% url 'news:news_list' page=all_news.previous_page_number %} {% else %} # {% endif %}">
+            href="{% if all_news.has_previous %} {% url 'news:news_list' page=all_news.previous_page_number %}?category={{ selected_category|default:'' }} {% else %} # {% endif %}">
             <span aria-hidden="true">←</span>
             Previous</a>
         </span>
        <span class="next">
             <a class="{% if not all_news.has_next %} disabled {% endif %}"
-            href="{% if all_news.has_next %} {% url 'news:news_list' page=all_news.next_page_number %} {% else %} # {% endif %}">Next
+            href="{% if all_news.has_next %} {% url 'news:news_list' page=all_news.next_page_number %}?category={{ selected_category|default:'' }} {% else %} # {% endif %}">Next
             <span aria-hidden="true">→</span></a>
        </span>
     </div>
