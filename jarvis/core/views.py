@@ -1,5 +1,9 @@
 import mimetypes
+from datetime import date
 
+from contacts.models import Contact
+# from .rss_feed import fetch_rss_feed
+# import feedparser
 from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth import update_session_auth_hash
@@ -9,21 +13,18 @@ from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
+from task_manager.models import Task
 
+from .chatgpt_service import get_chatgpt_response
 from .forms import CustomUserCreationForm
 from .forms import FileUploadForm
 from .forms import ProfileForm, CustomPasswordChangeForm
 from .models import CustomUser
 from .models import File
-
-from django.shortcuts import render
-from .chatgpt_service import get_chatgpt_response
-# from .rss_feed import fetch_rss_feed
-# import feedparser
-from django.conf import settings
 
 
 # def news_view(request):
@@ -40,17 +41,20 @@ def chat_view(request):
     return render(request, 'home.html', {'response': response})
 
 
+@login_required
 def home_view(request):
     """
-    Renders the home page.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-
-    Returns:
-        HttpResponse: The rendered home page.
+    Renders the home page with tasks due today and birthdays today.
     """
-    return render(request, 'home.html')
+    today = date.today()
+    tasks_today = Task.objects.filter(due_date=today, owner=request.user)
+    birthdays_today = Contact.objects.filter(birthday__month=today.month, birthday__day=today.day, user=request.user)
+
+    context = {
+        'tasks_today': tasks_today,
+        'birthdays_today': birthdays_today,
+    }
+    return render(request, 'home.html', context)
 
 
 def register_view(request):
