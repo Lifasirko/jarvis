@@ -1,9 +1,10 @@
-from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Task, TaskList, Tag
-from .forms import TaskForm, TaskListForm, TagForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+
+from .forms import TaskForm, TaskListForm, TagForm
+from .models import Task, TaskList, Tag
 
 
 @login_required
@@ -55,7 +56,7 @@ def task_create_view(request):
                 tags.extend(new_tags)
 
             task.tags.set(tags)
-            return redirect('task_list')  # Переконайтеся, що це правильний шлях для редіректу
+            return redirect('task_list')
     else:
         form = TaskForm()
 
