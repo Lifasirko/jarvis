@@ -6,20 +6,19 @@
         display: flex;
         flex-direction: column;
         padding: 20px;
-        color: #ffffff;
         font-size: 18px;
         transition: color 0.3s, background-color 0.3s;
         box-sizing: border-box;
     }
 
     .light-mode .file-list-page {
-        color: #000000;
-        background-color: #ffffff;
+        color: #000;
+        background-color: #fff;
     }
 
     .details {
         flex: 1;
-        overflow: hidden; 
+        overflow: hidden;
     }
 
     .statistics {
@@ -30,54 +29,54 @@
 
     .table-container {
         overflow-x: auto;
-        max-width: 100%;
+        width: 100%;
         box-sizing: border-box;
     }
 
     .fixed-table {
         width: 100%;
         border-collapse: collapse;
-        box-sizing: border-box;
+        table-layout: auto;
     }
 
     .fixed-table th, .fixed-table td {
         border: 1px solid #4caf50;
-        padding: 10px;
+        padding: 8px;
         text-align: left;
-        font-size: 16px;
-        box-sizing: border-box;
-        white-space: nowrap; 
+        font-size: 14px;
+        word-wrap: break-word;
     }
 
     .fixed-table th {
         background-color: rgba(0, 0, 0, 0.7);
-        color: #ffffff;
-        min-width: 120px; 
+        color: #fff;
     }
 
     .light-mode .fixed-table th {
         background-color: #f0f0f0;
-        color: #000000;
+        color: #000;
     }
 
     .fixed-table td {
         background-color: rgba(255, 255, 255, 0.8);
-        color: #000000;
+        color: #000;
     }
 
     .light-mode .fixed-table td {
-        background-color: #ffffff;
-        color: #000000;
+        background-color: #fff;
+        color: #000;
     }
 
     .btn {
         padding: 10px 20px;
         border-radius: 8px;
         text-decoration: none;
-        color: #ffffff;
+        color: #fff;
         cursor: pointer;
         font-size: 16px;
-        box-sizing: border-box;
+        display: inline-block;
+        text-align: center;
+        margin-bottom: 10px;
     }
 
     .btn-primary {
@@ -130,11 +129,10 @@
 
     .empty-row {
         text-align: center;
-        color: #ffffff;
     }
 
     .light-mode .empty-row {
-        color: #000000;
+        color: #000;
     }
 
     .upload-button {
@@ -144,6 +142,7 @@
 
     .form-inline {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         margin-bottom: 20px;
     }
@@ -151,26 +150,71 @@
     .form-inline input,
     .form-inline select {
         margin-right: 10px;
+        margin-bottom: 10px;
+        flex: 1;
+        min-width: 150px;
     }
 
     .actions-container {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        gap: 5px;
+        align-items: stretch;
+        width: 100%;
     }
 
-    .actions-container .btn {
-        margin: 0;
+    .btn-table {
+        width: 100%;
+        border-radius: 0;
+        padding: 10px 0;
     }
 
-    .actions-container .btn-primary {
-        margin-right: auto;
+    @media (max-width: 480px) {
+        .fixed-table th, .fixed-table td {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .fixed-table th {
+            text-align: center;
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        .fixed-table td {
+            text-align: center;
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        .actions-container {
+            flex-direction: row;
+            justify-content: space-around;
+        }
+
+        .btn {
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .form-inline {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .form-inline input,
+        .form-inline select {
+            margin-right: 0;
+        }
     }
 </style>
 
 <div class="file-list-page">
     <div class="details">
-        <a href="{% url 'upload_file' %}" class="btn btn-secondary upload-button">Upload new file</a>
+        <a href="{% url 'upload_file' %}" class="btn btn-secondary upload-button" aria-label="Upload new file">Upload new file</a>
         <form method="get" action="{% url 'file_list' %}" class="form-inline">
             <input type="text" name="q" placeholder="Search by name" value="{{ query }}">
             <select name="category">
@@ -180,7 +224,7 @@
                 <option value="video" {% if selected_category == 'video' %}selected{% endif %}>Video</option>
                 <option value="other" {% if selected_category == 'other' %}selected{% endif %}>Other</option>
             </select>
-            <button type="submit">Filter</button>
+            <button type="submit" class="btn btn-primary" aria-label="Filter">Filter</button>
         </form>
 
         <div class="table-container">
@@ -200,40 +244,40 @@
                         <td class="category-column">{{ file.get_category_display }}</td>
                         <td class="date-column">{{ file.uploaded_at }}</td>
                         <td class="actions-column">
-                            <div class="actions-container">
-                                <a href="{{ file.file.url }}" download class="btn btn-primary">Download</a>
+                            <div class="actions-container" style="text-align: left;">
+                                <a href="{{ file.file.url }}" download class="btn btn-primary" aria-label="Download {{ file.name }}">Download</a>
                                 <form method="post" action="{% url 'delete_file' file.id %}" onsubmit="return confirmDelete();">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                    <button type="submit" class="btn btn-danger" aria-label="Delete {{ file.name }}">Delete</button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td class="empty-row" colspan="4">No files found.</td>
+                        <td class="empty-row" colspan="8">No files found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-    </div>
 
-    <div class="statistics">
-        <h3>File List</h3>
-        <p>Total files: {{ total_files }}</p>
-        <p>Images: {{ image_files }}</p>
-        <p>Documents: {{ document_files }}</p>
-        <p>Videos: {{ video_files }}</p>
-        <p>Others: {{ other_files }}</p>
+        <div class="statistics">
+            <h3>File List</h3>
+            <p>Total files: {{ total_files }}</p>
+            <p>Images: {{ image_files }}</p>
+            <p>Documents: {{ document_files }}</p>
+            <p>Videos: {{ video_files }}</p>
+            <p>Others: {{ other_files }}</p>
 
-        <h3>Storage Statistics</h3>
-        <p>Total Storage: {{ storage_limit|floatformat:2 }} MB</p>
-        <p>Used Storage: {{ used_storage|floatformat:2 }} MB</p>
-        <p>Free Storage: {{ free_storage|floatformat:2 }} MB</p>
-        <div class="chart-container">
-            <div class="chart-wrapper">
-                <canvas id="storageChart"></canvas>
+            <h3>Storage Statistics</h3>
+            <p>Total Storage: {{ storage_limit|floatformat:2 }} MB</p>
+            <p>Used Storage: {{ used_storage|floatformat:2 }} MB</p>
+            <p>Free Storage: {{ free_storage|floatformat:2 }} MB</p>
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <canvas id="storageChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -261,10 +305,10 @@ document.addEventListener("DOMContentLoaded", function() {
             maintainAspectRatio: false,
         }
     });
-});
 
-if (localStorage.getItem("theme") === "light") {
-    document.body.classList.add("light-mode");
-}
+    if (localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light-mode");
+    }
+});
 </script>
 {% endblock %}

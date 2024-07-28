@@ -30,10 +30,15 @@
         background-color: #fff;
     }
 
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+
     .notes-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
         border: 2px solid #555;
     }
 
@@ -41,6 +46,7 @@
         border: 1px solid #444;
         padding: 10px;
         text-align: left;
+        word-wrap: break-word;
     }
 
     .search-form {
@@ -53,6 +59,9 @@
         border-radius: 5px;
         border: 1px solid #333;
         color: #000;
+        width: calc(100% - 40px);
+        max-width: 300px;
+        margin-right: 10px;
     }
 
     .search-button {
@@ -71,6 +80,9 @@
 
     .action-buttons {
         margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .btn-large {
@@ -81,6 +93,9 @@
         text-decoration: none;
         color: #ffffff;
         text-align: center;
+        margin: 5px;
+        width: calc(100% - 20px);
+        max-width: 300px;
     }
 
     .btn-blue {
@@ -91,13 +106,20 @@
         background-color: #0077cc;
     }
 
-    .btn-secondary {
-        background-color: #0077cc;
+    .btn-secondary, .btn-danger {
         padding: 10px 20px;
         border-radius: 5px;
         color: white;
         text-decoration: none;
         font-size: 16px;
+        margin: 5px 0;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+    }
+
+    .btn-secondary {
+        background-color: #0077cc;
     }
 
     .btn-secondary:hover {
@@ -106,15 +128,37 @@
 
     .btn-danger {
         background-color: #ff4d4d;
-        padding: 10px 20px;
-        border-radius: 5px;
-        color: white;
-        text-decoration: none;
-        font-size: 16px;
     }
 
     .btn-danger:hover {
         background-color: #cc0000;
+    }
+
+    @media (max-width: 480px) {
+        .notes-table th, .notes-table td {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .search-input {
+            font-size: 14px;
+            padding: 8px;
+            width: calc(100% - 20px);
+        }
+
+        .search-button, .btn-large {
+            font-size: 14px;
+            padding: 10px;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .notes-table td a {
+            display: block;
+            margin-bottom: 5px;
+            width: 100%;
+            text-align: center;
+        }
     }
 </style>
 
@@ -134,36 +178,38 @@
     </div>
 
     {% if notes %}
-        <table class="notes-table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Tags</th>
-                    <th>Created at</th>
-                    <th>Updated at</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for note in notes %}
+        <div class="table-container">
+            <table class="notes-table">
+                <thead>
                     <tr>
-                        <td>{{ note.title }}</td>
-                        <td>{% for tag in note.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-                        <td>{{ note.created_at }}</td>
-                        <td>{{ note.updated_at }}</td>
-                        <td>
-                            <a href="{% url 'notes:note_detail' note.pk %}" class="btn-secondary">View</a>
-                            <a href="{% url 'notes:note_edit' note.pk %}" class="btn-secondary">Edit</a>
-                            <a href="{% url 'notes:note_delete' note.pk %}" class="btn-danger">Delete</a>
-                        </td>
+                        <th>Title</th>
+                        <th>Tags</th>
+<!--                        <th>Created at</th>-->
+<!--                        <th>Updated at</th>-->
+                        <th>Actions</th>
                     </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="5" class="no-notes">No notes found.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for note in notes %}
+                        <tr>
+                            <td>{{ note.title }}</td>
+                            <td>{% for tag in note.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+<!--                            <td>{{ note.created_at }}</td>-->
+<!--                            <td>{{ note.updated_at }}</td>-->
+                            <td class="action-buttons">
+                                <a href="{% url 'notes:note_detail' note.pk %}" class="btn-secondary">View</a>
+                                <a href="{% url 'notes:note_edit' note.pk %}" class="btn-secondary">Edit</a>
+                                <a href="{% url 'notes:note_delete' note.pk %}" class="btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="no-notes">No notes found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 </div>
 {% endblock %}
