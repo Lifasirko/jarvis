@@ -6,7 +6,7 @@
 <style>
     body {
         background-color: #000;
-        color: #fff; /* Для забезпечення читабельності тексту на чорному фоні */
+        color: #fff;
     }
 
     .search-form {
@@ -40,21 +40,21 @@
     }
 
     .btn-large {
-        font-size: 18px; /* Збільшує шрифт кнопки */
-        padding: 15px 30px; /* Збільшує відступи всередині кнопки */
-        border-radius: 8px; /* Закруглює кути кнопки */
-        display: inline-block; /* Робить кнопку відображеною як блочний елемент */
-        text-decoration: none; /* Видаляє підкреслення у посилань */
-        color: #ffffff; /* Білий текст на кнопці */
-        text-align: center; /* Центрує текст кнопки */
+        font-size: 18px;
+        padding: 15px 30px;
+        border-radius: 8px;
+        display: inline-block;
+        text-decoration: none;
+        color: #ffffff;
+        text-align: center;
     }
 
     .btn-blue {
-        background-color: #00aaff; /* Голубий фон кнопки */
+        background-color: #00aaff;
     }
 
     .btn-blue:hover {
-        background-color: #0077cc; /* Темніший голубий колір при наведенні */
+        background-color: #0077cc;
     }
 
     .tasks-table {
@@ -102,6 +102,19 @@
     .btn-danger:hover {
         background-color: #cc0000;
     }
+
+    .btn-completed {
+        background-color: #28a745;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .btn-completed:hover {
+        background-color: #218838;
+    }
 </style>
 
 <div class="container">
@@ -128,6 +141,7 @@
         <a href="{% url 'task_manager:task_create' %}" class="btn-large btn-blue">Add New Task</a>
         <a href="{% url 'task_manager:tag_manage' %}" class="btn-large btn-blue">Tag Manager</a>
         <a href="{% url 'task_manager:task_list_manage' %}" class="btn-large btn-blue">Task List Manager</a>
+        <a href="{% url 'task_manager:completed_task_list' %}" class="btn-large btn-blue">Completed Tasks</a>
     </div>
 
     {% if tasks %}
@@ -149,9 +163,10 @@
                         <td>{% for tag in task.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                         <td>{{ task.due_date }}</td>
                         <td>
-                            <a href="{% url 'task_manager:task_detail' task.pk %}" class="btn-secondary">View</a>
-                            <a href="{% url 'task_manager:task_update' task.pk %}" class="btn-secondary">Edit</a>
-                            <a href="{% url 'task_manager:task_delete' task.pk %}" class="btn-danger">Delete</a>
+                            <a href="{% url 'task_manager:task_detail' task.pk %}" class="btn-secondary">🔍</a>
+                            <a href="{% url 'task_manager:task_update' task.pk %}" class="btn-secondary">🖊</a>
+                            <a href="{% url 'task_manager:task_delete' task.pk %}" class="btn-danger">🗑</a>
+                            <a href="{% url 'task_manager:mark_task_as_completed' task.pk %}" class="btn-completed">✅</a>
                         </td>
                     </tr>
                 {% empty %}

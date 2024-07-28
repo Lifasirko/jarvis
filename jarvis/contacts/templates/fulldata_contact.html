@@ -7,17 +7,17 @@
         border: 2px solid #00aaff;
         padding: 20px;
         border-radius: 10px;
-        background-color: #2e2e2e;
-        width: 100%;
+        background-color: inherit;
+        width: 90%;
         max-width: 600px;
-        margin: 0 auto;
+        margin: 20px auto;
+        color: inherit;
     }
-    .contact_name {
-        color: #00aaff;
+
+    .contact-detail p {
+        color: inherit;
     }
-    .contact-address, .contact-phone-number, .contact-email, .contact-birthday {
-        color: #ffffff;
-    }
+
     .btn {
         background-color: #00aaff;
         color: white;
@@ -29,62 +29,58 @@
         text-decoration: none;
         display: inline-block;
         margin: 5px;
+        width: calc(100% - 20px);
+        max-width: 200px;
     }
+
     .btn-secondary {
         background-color: #0077cc;
     }
+
     .btn-primary {
         background-color: #4caf50;
     }
+
     .btn-primary:hover {
         background-color: #388e3c;
     }
+
     .btn-secondary:hover {
         background-color: #005fa3;
     }
-</style>
-<style>
-    .contact-detail {
-        text-align: center;
-        border: 2px solid #00aaff;
-        padding: 20px;
-        border-radius: 10px;
-        background-color: #2e2e2e;
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto;
+
+    .grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
     }
-    .contact_name {
-        color: #00aaff;
-    }
-    .contact-address, .contact-phone-number, .contact-email, .contact-birthday {
-        color: #ffffff;
-    }
-    .btn {
-        background-color: #00aaff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        text-decoration: none;
-        display: inline-block;
-        margin: 5px;
-    }
-    .btn-secondary {
-        background-color: #0077cc;
-    }
-    .btn-primary {
-        background-color: #4caf50;
-    }
-    .btn-primary:hover {
-        background-color: #388e3c;
-    }
-    .btn-secondary:hover {
-        background-color: #005fa3;
+
+    @media (max-width: 480px) {
+        .contact-detail {
+            padding: 15px;
+        }
+
+        .btn {
+            font-size: 14px;
+            padding: 8px 15px;
+            margin: 4px;
+        }
     }
 </style>
+
+<script>
+    function toggleTheme() {
+        const body = document.body;
+        const newTheme = body.classList.contains('light-mode') ? 'dark' : 'light';
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', newTheme);
+    }
+
+    window.onload = function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.body.classList.toggle('light-mode', theme === 'light');
+    }
+</script>
 
 <div class="contact-detail">
     <h3 class="contact_name">{{ contact.name }}</h3>
