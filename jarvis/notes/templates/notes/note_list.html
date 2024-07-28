@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Note List{% endblock %}
+{% block title %}
+    Note List
+{% endblock %}
 
 {% block content %}
 <style>
@@ -106,18 +108,13 @@
 
 <div class="container">
     <h1>Notes</h1>
-    <form method="get" action="{% url 'notes:note_list' %}" class="search-form">
-        <input type="text" name="q" placeholder="Search notes by title..." class="search-input">
-        <button type="submit" class="search-button">Search</button>
+    <form method="get" action="{% url 'notes:note_list' %}">
+        <input type="text" name="search" placeholder="Search notes by title or tag...">
+        <button type="submit">Search</button>
     </form>
-    <form method="get" action="{% url 'notes:note_list' %}" class="search-form">
-        <input type="text" name="tag" placeholder="Search notes by tag..." class="search-input">
-        <button type="submit" class="search-button">Search</button>
-    </form>
-    <div class="action-buttons">
-        <a href="{% url 'notes:note_create' %}" class="btn-large btn-blue">Add New Note</a>
-        <a href="{% url 'notes:tag_create' %}" class="btn-large btn-blue">Add New Tag</a>
-    </div>
+    <a href="{% url 'notes:note_create' %}">Add New Note</a>
+    <p></p>
+    <a href="{% url 'notes:tag_manage' %}">Edit Tags</a>
 
     {% if notes %}
         <table class="notes-table">
