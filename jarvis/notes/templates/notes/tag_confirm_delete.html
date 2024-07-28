@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Confirm Delete Tag
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/notes.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>Confirm Delete Tag</h1>
+    <p>Are you sure you want to delete the tag "{{ tag.name }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirm</button>
+    </form>
+    <a href="{% url 'notes:tag_manage' %}">Cancel</a>
+{% endblock %}
+
