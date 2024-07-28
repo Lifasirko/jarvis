@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Create and Manage Tags
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/notes.css' %}">
+    <style>
+        .tag-list {
+            max-height: 200px; /* Adjust the height as needed */
+            overflow-y: auto;
+            border: 1px solid #ccc; /* Optional: add border for better visibility */
+            padding: 10px; /* Optional: add padding for better appearance */
+            margin-top: 10px; /* Optional: add margin to separate from other content */
+            text-align: left;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Create Tag</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+
+    <h2>Existing Tags</h2>
+    <!-- Search form -->
+    <form method="get" action="{% url 'notes:tag_manage' %}">
+        <input type="text" name="search" placeholder="Search tags..." value="{{ search_query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <div class="tag-list">
+        <ul>
+            {% for tag in tags %}
+                <li>
+                    {{ tag.name }}
+                    <form action="{% url 'notes:tag_manage_with_delete' delete_tag_id=tag.id %}" method="post" style="display:inline-block; margin-left: 5px;">
+                        {% csrf_token %}
+                        <button type="submit">
+                            Delete
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+
+
+

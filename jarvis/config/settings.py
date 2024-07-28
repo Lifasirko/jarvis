@@ -46,6 +46,10 @@ INSTALLED_APPS = [
 
     'contacts',
 
+    'task_manager',
+
+    'news',
+
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -150,7 +154,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
@@ -178,3 +182,7 @@ MAX_FILE_SIZE = env.int('MAX_FILE_SIZE')
 PHONENUMBER_DB_FORMAT = env('PHONENUMBER_DB_FORMAT')
 PHONENUMBER_DEFAULT_REGION = env('PHONENUMBER_DEFAULT_REGION')
 LOGIN_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+CHAT_GPT_API_KEY = env('CHAT_GPT_API_KEY')

@@ -2,14 +2,16 @@ from django.contrib.auth.views import PasswordResetDoneView, PasswordResetConfir
 from django.urls import path
 
 from . import views
-from .views import home_view, register_view, login_view, logout_view, contact_list_view, \
-    file_list_view, news_view, user_list_view, delete_user_view, upload_file_view, delete_file_view, \
-    profile_view, change_password_view, note_list_view
-from django.conf import settings
-from django.conf.urls.static import static
-
+from .views import home_view, register_view, login_view, logout_view, file_list_view, user_list_view, \
+    delete_user_view, upload_file_view, delete_file_view, \
+    profile_view, change_password_view
+from notes.views import note_list
+from contacts.views import contact_list_view
+from news.views import news_list
+from task_manager.views import task_list_view
 
 urlpatterns = [
+    path('', views.chat_view, name='home'),
     path('', home_view, name='home'),
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),
@@ -31,14 +33,18 @@ urlpatterns = [
     # path('dashboard/', dashboard_view, name='dashboard'),
     path('contacts/', contact_list_view, name='contact_list'),
 
-    path('notes/', note_list_view, name='note_list'),
+    path('notes/', note_list, name='note_list'),
 
     path('files/', file_list_view, name='file_list'),
     path('files/upload/', upload_file_view, name='upload_file'),
     path('files/delete/<int:file_id>/', delete_file_view, name='delete_file'),
 
-    path('news/', news_view, name='news'),
+    path('news/', news_list, name='news'),
+
+    path('tasks/', task_list_view, name='task_list'),
 
     path('users/', user_list_view, name='user_list'),
     path('users/delete/<int:user_id>/', delete_user_view, name='delete_user'),
+    # path('news/', news_view, name='news'),
+    path('', views.chat_view, name='home'),
 ]

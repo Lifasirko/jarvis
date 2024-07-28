@@ -4,6 +4,7 @@ import datetime
 
 from .models import Contact
 
+
 class ContactForm(forms.ModelForm):
     name = forms.CharField(
         required=True,
@@ -22,7 +23,7 @@ class ContactForm(forms.ModelForm):
         required=True
     )
     birthday = forms.DateField(
-        required=True
+        required=False
     )
 
     class Meta:
@@ -30,15 +31,14 @@ class ContactForm(forms.ModelForm):
         fields = ['name', 'address', 'phone_number', 'email', 'birthday']
         exclude = ['user']
 
-    def clean_name(self):
-        name = self.cleaned_data.get('name')
-        if not name.isalpha():
-            raise forms.ValidationError("Name should only contain alphabetic characters.")
-        return name
+    # def clean_name(self):
+    #     name = self.cleaned_data.get('name')
+    #     if not name.isalpha():
+    #         raise forms.ValidationError("Name should only contain alphabetic characters.")
+    #     return name
 
     def clean_birthday(self):
         birthday = self.cleaned_data.get('birthday')
-        print(birthday)
-        if birthday > datetime.date.today():
+        if birthday and birthday > datetime.date.today():
             raise forms.ValidationError("Birthday cannot be in the future.")
         return birthday

@@ -1,32 +1,126 @@
-{% load static %}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Note List</title>
-    <style>
-        body {
-            background-color: #000;
-        }
-    </style>
-    <link rel="stylesheet" href="{% static 'css/notes.css' %}">
+{% block title %}
+    Note List
+{% endblock %}
 
-</head>
-<body>
+{% block content %}
+<style>
+    body {
+        background-color: #000;
+        color: #fff; /* Для забезпечення читабельності тексту на чорному фоні */
+    }
+
+    .search-form {
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #333;
+        color: #000;
+    }
+
+    .search-button {
+        background-color: #00aaff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .search-button:hover {
+        background-color: #0077cc;
+    }
+
+    .action-buttons {
+        margin-bottom: 20px;
+    }
+
+    .btn-large {
+        font-size: 18px; /* Збільшує шрифт кнопки */
+        padding: 15px 30px; /* Збільшує відступи всередині кнопки */
+        border-radius: 8px; /* Закруглює кути кнопки */
+        display: inline-block; /* Робить кнопку відображеною як блочний елемент */
+        text-decoration: none; /* Видаляє підкреслення у посилань */
+        color: #ffffff; /* Білий текст на кнопці */
+        text-align: center; /* Центрує текст кнопки */
+    }
+
+    .btn-blue {
+        background-color: #00aaff; /* Голубий фон кнопки */
+    }
+
+    .btn-blue:hover {
+        background-color: #0077cc; /* Темніший голубий колір при наведенні */
+    }
+
+    .notes-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .notes-table th, .notes-table td {
+        border: 1px solid #444;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .notes-table th {
+        background-color: #333;
+    }
+
+    .notes-table td {
+        background-color: #222;
+    }
+
+    .btn-secondary {
+        background-color: #0077cc;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #005fa3;
+    }
+
+    .btn-danger {
+        background-color: #ff4d4d;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .btn-danger:hover {
+        background-color: #cc0000;
+    }
+</style>
+
+<div class="container">
     <h1>Notes</h1>
     <form method="get" action="{% url 'notes:note_list' %}">
-        <input type="text" name="q" placeholder="Search notes...">
+        <input type="text" name="search" placeholder="Search notes by title or tag...">
         <button type="submit">Search</button>
     </form>
     <a href="{% url 'notes:note_create' %}">Add New Note</a>
+    <p></p>
+    <a href="{% url 'notes:tag_manage' %}">Edit Tags</a>
 
     {% if notes %}
-        <table>
+        <table class="notes-table">
             <thead>
                 <tr>
                     <th>Title</th>
-                    <th>Content</th>
                     <th>Tags</th>
                     <th>Created at</th>
                     <th>Updated at</th>
@@ -37,23 +131,22 @@
                 {% for note in notes %}
                     <tr>
                         <td>{{ note.title }}</td>
-                        <td>{{ note.content }}</td>
-                        <td>{{ note.tags.all|join:", " }}</td>
+                        <td>{% for tag in note.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                         <td>{{ note.created_at }}</td>
                         <td>{{ note.updated_at }}</td>
                         <td>
-                            <a href="{% url 'notes:note_detail' note.pk %}">View</a>
-                            <a href="{% url 'notes:note_edit' note.pk %}">Edit</a>
-                            <a href="{% url 'notes:note_delete' note.pk %}">Delete</a>
+                            <a href="{% url 'notes:note_detail' note.pk %}" class="btn-secondary">View</a>
+                            <a href="{% url 'notes:note_edit' note.pk %}" class="btn-secondary">Edit</a>
+                            <a href="{% url 'notes:note_delete' note.pk %}" class="btn-danger">Delete</a>
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="6">No notes found.</td>
+                        <td colspan="6" class="no-notes">No notes found.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% endif %}
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>News List</h1>
+
+<div><a href="{% url 'news:news_update' %}" class="btn btn-primary">Update news</a></div>
+
+<form method="get" action="{% url 'news:news_list' %}">
+    <label for="category">Sort by category:</label>
+    <select id="category" name="category" class="form-control" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for category in categories %}
+        <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category %}selected{% endif %}>
+            {{ category.name }}
+        </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% for n in all_news %}
+
+    <div class = "news_item mt-3">
+        <h4><a href="{% url 'news:news_detail' n.title %}">{{ n.title }}</a></h4>
+        <div>{{ n.category }}</div>
+        <div>{{ n.published_time }}</div>
+        <div>From {{ n.source }}</div>
+    </div>
+
+{% endfor %}
+
+<nav>
+    <div class="pager">
+        <span class="previous">
+            <a class="{% if not all_news.has_previous %} disabled {% endif %}"
+            href="{% if all_news.has_previous %} {% url 'news:news_list' page=all_news.previous_page_number %}?category={{ selected_category|default:'' }} {% else %} # {% endif %}">
+            <span aria-hidden="true">←</span>
+            Previous</a>
+        </span>
+       <span class="next">
+            <a class="{% if not all_news.has_next %} disabled {% endif %}"
+            href="{% if all_news.has_next %} {% url 'news:news_list' page=all_news.next_page_number %}?category={{ selected_category|default:'' }} {% else %} # {% endif %}">Next
+            <span aria-hidden="true">→</span></a>
+       </span>
+    </div>
+</nav>
+
+{% endblock %}
