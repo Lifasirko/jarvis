@@ -1,14 +1,46 @@
 {% extends "base.html" %}
 
-{% block title %}
-    Note List
-{% endblock %}
+{% block title %}Note List{% endblock %}
 
 {% block content %}
 <style>
-    body {
+    body.dark-theme {
         background-color: #000;
-        color: #fff; /* Для забезпечення читабельності тексту на чорному фоні */
+        color: #fff;
+    }
+
+    body.light-theme {
+        background-color: #fff;
+        color: #000;
+    }
+
+    .dark-theme .notes-table th {
+        background-color: #333;
+    }
+
+    .dark-theme .notes-table td {
+        background-color: #222;
+    }
+
+    .light-theme .notes-table th {
+        background-color: #ddd;
+    }
+
+    .light-theme .notes-table td {
+        background-color: #fff;
+    }
+
+    .notes-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        border: 2px solid #555;
+    }
+
+    .notes-table th, .notes-table td {
+        border: 1px solid #444;
+        padding: 10px;
+        text-align: left;
     }
 
     .search-form {
@@ -42,41 +74,21 @@
     }
 
     .btn-large {
-        font-size: 18px; /* Збільшує шрифт кнопки */
-        padding: 15px 30px; /* Збільшує відступи всередині кнопки */
-        border-radius: 8px; /* Закруглює кути кнопки */
-        display: inline-block; /* Робить кнопку відображеною як блочний елемент */
-        text-decoration: none; /* Видаляє підкреслення у посилань */
-        color: #ffffff; /* Білий текст на кнопці */
-        text-align: center; /* Центрує текст кнопки */
+        font-size: 18px;
+        padding: 15px 30px;
+        border-radius: 8px;
+        display: inline-block;
+        text-decoration: none;
+        color: #ffffff;
+        text-align: center;
     }
 
     .btn-blue {
-        background-color: #00aaff; /* Голубий фон кнопки */
+        background-color: #00aaff;
     }
 
     .btn-blue:hover {
-        background-color: #0077cc; /* Темніший голубий колір при наведенні */
-    }
-
-    .notes-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    .notes-table th, .notes-table td {
-        border: 1px solid #444;
-        padding: 10px;
-        text-align: left;
-    }
-
-    .notes-table th {
-        background-color: #333;
-    }
-
-    .notes-table td {
-        background-color: #222;
+        background-color: #0077cc;
     }
 
     .btn-secondary {
@@ -110,11 +122,16 @@
     <h1>Notes</h1>
     <form method="get" action="{% url 'notes:note_list' %}">
         <input type="text" name="search" placeholder="Search notes by title or tag...">
-        <button type="submit">Search</button>
+        <button type="submit" class="search-button">Search</button>
     </form>
-    <a href="{% url 'notes:note_create' %}">Add New Note</a>
-    <p></p>
-    <a href="{% url 'notes:tag_manage' %}">Edit Tags</a>
+<!--    <form method="get" action="{% url 'notes:note_list' %}" class="search-form">-->
+<!--        <input type="text" name="tag" placeholder="Search notes by tag..." class="search-input">-->
+<!--        <button type="submit" class="search-button">Search</button>-->
+<!--    </form>-->
+    <div class="action-buttons">
+        <a href="{% url 'notes:note_create' %}" class="btn-large btn-blue">Add New Note</a>
+        <a href="{% url 'notes:tag_manage' %}" class="btn-large btn-blue">Edit Tags</a>
+    </div>
 
     {% if notes %}
         <table class="notes-table">
@@ -142,7 +159,7 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="6" class="no-notes">No notes found.</td>
+                        <td colspan="5" class="no-notes">No notes found.</td>
                     </tr>
                 {% endfor %}
             </tbody>
