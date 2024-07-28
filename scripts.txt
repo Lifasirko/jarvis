@@ -9,6 +9,10 @@ superuser Tony 1111
 python manage.py shell
 from task_manager.models import Task, Tag
 
+git fetch origin
+git pull origin <branch_name>
+
+
 
 python manage.py makemigrations
 python manage.py migrate
