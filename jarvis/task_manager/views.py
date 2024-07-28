@@ -40,14 +40,25 @@ def task_create_view(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            task = form.save(commit=False)
+            task = form.save(commit=False, owner=request.user)
             task.owner = request.user
             task.save()
-            form.save_m2m()
-            return redirect('task_manager:task_list')
-    else:
-        form = TaskForm()
-    return render(request, 'task_form.html', {'form': form})
+
+            new_tags = form.cleaned_data.get('new_tags')
+            selected_tags = form.cleaned_data.get('tags')
+
+            tags = list(selected_tags)
+            if new_tags:
+                tag_names = [name.strip() for name in new_tags.split(',')]
+                new_tags = [Tag.objects.get_or_create(name=name, defaults={'owner': task.owner})[0] for name in
+                            tag_names]
+                tags.extend(new_tags)
+
+            task.tags.set(tags)
+            return redirect('task_list')
+        else:
+            form = TaskForm()
+        return render(request, 'task_form.html', {'form': form})
 
 
 @login_required
