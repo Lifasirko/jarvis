@@ -11,5 +11,8 @@ urlpatterns = [
     path('tags/manage/delete/<int:delete_tag_id>/', views.tag_manage, name='tag_manage_with_delete'),
     path('tags/create/', views.tag_create, name='tag_create'),
     path('<int:pk>/edit/', views.note_edit, name='note_edit'),
-    path('<int:pk>/delete/', views.note_delete, name='note_delete')
+    path('<int:pk>/delete/', views.note_delete, name='note_delete'),
+
+    path('note/<int:note_id>/upload_file/', views.upload_file_for_note_view, name='upload_file_for_note'),
+    path('note/<int:note_id>/delete_file/<int:file_id>/', views.delete_file_for_note_view, name='delete_file_for_note'),
 ]

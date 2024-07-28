@@ -5,6 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import TaskForm, TaskListForm, TagForm
 from .models import Task, TaskList, Tag
+from core.forms import FileUploadForm
+from core.models import File
 
 
 @login_required
@@ -32,9 +34,16 @@ def task_list_view(request):
 
 @login_required
 def task_detail_view(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    return render(request, 'task_detail.html', {'task': task})
-
+    task = get_object_or_404(Task, id=task_id, owner=request.user)
+    if request.method == 'POST':
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('task_detail', task_id=task.id)
+    else:
+        form = TaskForm(instance=task)
+    files = task.files.all()
+    return render(request, 'task_detail.html', {'form': form, 'task': task, 'files': files})
 
 @login_required
 def task_create_view(request):
@@ -199,3 +208,30 @@ def check_tasks_in_list(request, task_list_id):
     task_list = get_object_or_404(TaskList, id=task_list_id, owner=request.user)
     has_tasks = Task.objects.filter(task_list=task_list).exists()
     return JsonResponse({'has_tasks': has_tasks})
+
+
+@login_required
+def upload_file_for_task_view(request, task_id):
+    task = get_object_or_404(Task, id=task_id, owner=request.user)
+    if request.method == 'POST':
+        form = FileUploadForm(request.POST, request.FILES)
+        form.instance.user = request.user
+        if form.is_valid():
+            file_instance = form.save(commit=False)
+            file_instance.user = request.user
+            file_instance.task = task
+            file_instance.save()
+            return redirect('task_manager:task_detail', task_id=task.id)
+    else:
+        form = FileUploadForm()
+
+    return render(request, 'upload_file.html', {'form': form, 'task': task})
+
+
+@login_required
+def delete_file_for_task_view(request, file_id, task_id):
+    file = get_object_or_404(File, id=file_id, user=request.user, task_id=task_id)
+    if request.method == 'POST':
+        file.delete()
+        return redirect('task_detail', task_id=task_id)
+    return render(request, 'confirm_delete.html', {'file': file})

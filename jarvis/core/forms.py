@@ -59,18 +59,18 @@ class FileUploadForm(forms.ModelForm):
         widgets (dict): Custom widgets for form fields.
     """
 
-    class Meta:
-        model = File
-        fields = ['file', 'category', 'name']
-        widgets = {
-            'category': forms.Select(choices=File.CATEGORY_CHOICES),
-            'name': forms.TextInput(attrs={'readonly': 'readonly'}),
-        }
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.file:
             self.fields['name'].initial = self.instance.file.name
+
+    class Meta:
+        model = File
+        fields = ['file', 'category', 'name', 'task', 'note']
+        widgets = {
+            'category': forms.Select(choices=File.CATEGORY_CHOICES),
+            'name': forms.TextInput(attrs={'readonly': 'readonly'}),
+        }
 
     def clean_file(self):
         file = self.cleaned_data.get('file')

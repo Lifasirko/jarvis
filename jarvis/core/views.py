@@ -180,7 +180,7 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     subject_template_name = 'password_reset_subject.txt'
 
 
-@login_required
+# @login_required
 # def contact_list_view(request):
 #     """
 #     Renders the contact list page. This view requires the user to be logged in.
