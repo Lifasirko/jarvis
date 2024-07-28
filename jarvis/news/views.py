@@ -28,7 +28,8 @@ def news_list(request, page=1):
     contacts_on_page = paginator.page(page)
 
     return render(request, 'news_list.html', {"all_news": contacts_on_page,
-                                              "categories": categories})
+                                              "categories": categories,
+                                              "selected_category": category,})
 
 
 def news_detail(request, title):
