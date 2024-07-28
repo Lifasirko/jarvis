@@ -163,10 +163,10 @@
                         <td>{% for tag in task.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                         <td>{{ task.due_date }}</td>
                         <td>
-                            <a href="{% url 'task_manager:task_detail' task.pk %}" class="btn-secondary">View</a>
-                            <a href="{% url 'task_manager:task_update' task.pk %}" class="btn-secondary">Edit</a>
-                            <a href="{% url 'task_manager:task_delete' task.pk %}" class="btn-danger">Delete</a>
-                            <a href="{% url 'task_manager:mark_task_as_completed' task.pk %}" class="btn-completed">Done</a>
+                            <a href="{% url 'task_manager:task_detail' task.pk %}" class="btn-secondary">🔍</a>
+                            <a href="{% url 'task_manager:task_update' task.pk %}" class="btn-secondary">🖊</a>
+                            <a href="{% url 'task_manager:task_delete' task.pk %}" class="btn-danger">🗑</a>
+                            <a href="{% url 'task_manager:mark_task_as_completed' task.pk %}" class="btn-completed">✅</a>
                         </td>
                     </tr>
                 {% empty %}
