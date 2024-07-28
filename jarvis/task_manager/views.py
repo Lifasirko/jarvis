@@ -55,10 +55,11 @@ def task_create_view(request):
                 tags.extend(new_tags)
 
             task.tags.set(tags)
-            return redirect('task_list')
-        else:
-            form = TaskForm()
-        return render(request, 'task_form.html', {'form': form})
+            return redirect('task_list')  # Переконайтеся, що це правильний шлях для редіректу
+    else:
+        form = TaskForm()
+
+    return render(request, 'task_form.html', {'form': form})
 
 
 @login_required
