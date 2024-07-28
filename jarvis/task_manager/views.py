@@ -15,7 +15,7 @@ def task_list_view(request):
     tag_query = request.GET.get('tag', '')
     task_list_id = request.GET.get('task_list_id', None)
 
-    tasks = Task.objects.filter(owner=request.user)
+    tasks = Task.objects.filter(owner=request.user, is_completed=False)
 
     if search_query:
         tasks = tasks.filter(Q(title__icontains=search_query))
@@ -44,6 +44,7 @@ def task_detail_view(request, task_id):
         form = TaskForm(instance=task)
     files = task.files.all()
     return render(request, 'task_detail.html', {'form': form, 'task': task, 'files': files})
+
 
 @login_required
 def task_create_view(request):
@@ -235,3 +236,17 @@ def delete_file_for_task_view(request, file_id, task_id):
         file.delete()
         return redirect('task_detail', task_id=task_id)
     return render(request, 'confirm_delete.html', {'file': file})
+
+
+@login_required
+def completed_task_list(request):
+    tasks = Task.objects.filter(owner=request.user, is_completed=True)
+    return render(request, 'completed_task_list.html', {'tasks': tasks})
+
+
+@login_required
+def mark_task_as_completed(request, task_id):
+    task = get_object_or_404(Task, id=task_id, owner=request.user)
+    task.is_completed = True
+    task.save()
+    return redirect('task_list')
