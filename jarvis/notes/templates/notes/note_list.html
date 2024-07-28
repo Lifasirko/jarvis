@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Note List{% endblock %}
+
+{% block content %}
+<style>
+    body.dark-theme {
+        background-color: #000;
+        color: #fff;
+    }
+
+    body.light-theme {
+        background-color: #fff;
+        color: #000;
+    }
+
+    .dark-theme .notes-table th {
+        background-color: #333;
+    }
+
+    .dark-theme .notes-table td {
+        background-color: #222;
+    }
+
+    .light-theme .notes-table th {
+        background-color: #ddd;
+    }
+
+    .light-theme .notes-table td {
+        background-color: #fff;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+
+    .notes-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 2px solid #555;
+    }
+
+    .notes-table th, .notes-table td {
+        border: 1px solid #444;
+        padding: 10px;
+        text-align: left;
+        word-wrap: break-word;
+    }
+
+    .search-form {
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #333;
+        color: #000;
+        width: calc(100% - 40px);
+        max-width: 300px;
+        margin-right: 10px;
+    }
+
+    .search-button {
+        background-color: #00aaff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .search-button:hover {
+        background-color: #0077cc;
+    }
+
+    .action-buttons {
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn-large {
+        font-size: 18px;
+        padding: 15px 30px;
+        border-radius: 8px;
+        display: inline-block;
+        text-decoration: none;
+        color: #ffffff;
+        text-align: center;
+        margin: 5px;
+        width: calc(100% - 20px);
+        max-width: 300px;
+    }
+
+    .btn-blue {
+        background-color: #00aaff;
+    }
+
+    .btn-blue:hover {
+        background-color: #0077cc;
+    }
+
+    .btn-secondary, .btn-danger {
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin: 5px 0;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+    }
+
+    .btn-secondary {
+        background-color: #0077cc;
+    }
+
+    .btn-secondary:hover {
+        background-color: #005fa3;
+    }
+
+    .btn-danger {
+        background-color: #ff4d4d;
+    }
+
+    .btn-danger:hover {
+        background-color: #cc0000;
+    }
+
+    @media (max-width: 480px) {
+        .notes-table th, .notes-table td {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .search-input {
+            font-size: 14px;
+            padding: 8px;
+            width: calc(100% - 20px);
+        }
+
+        .search-button, .btn-large {
+            font-size: 14px;
+            padding: 10px;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .notes-table td a {
+            display: block;
+            margin-bottom: 5px;
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="container">
+    <h1>Notes</h1>
+    <form method="get" action="{% url 'notes:note_list' %}">
+        <input type="text" name="search" placeholder="Search notes by title or tag...">
+        <button type="submit" class="search-button">Search</button>
+    </form>
+<!--    <form method="get" action="{% url 'notes:note_list' %}" class="search-form">-->
+<!--        <input type="text" name="tag" placeholder="Search notes by tag..." class="search-input">-->
+<!--        <button type="submit" class="search-button">Search</button>-->
+<!--    </form>-->
+    <div class="action-buttons">
+        <a href="{% url 'notes:note_create' %}" class="btn-large btn-blue">Add New Note</a>
+        <a href="{% url 'notes:tag_manage' %}" class="btn-large btn-blue">Edit Tags</a>
+    </div>
+
+    {% if notes %}
+        <div class="table-container">
+            <table class="notes-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Tags</th>
+<!--                        <th>Created at</th>-->
+<!--                        <th>Updated at</th>-->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for note in notes %}
+                        <tr>
+                            <td>{{ note.title }}</td>
+                            <td>{% for tag in note.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+<!--                            <td>{{ note.created_at }}</td>-->
+<!--                            <td>{{ note.updated_at }}</td>-->
+                            <td class="action-buttons">
+                                <a href="{% url 'notes:note_detail' note.pk %}" class="btn-secondary">View</a>
+                                <a href="{% url 'notes:note_edit' note.pk %}" class="btn-secondary">Edit</a>
+                                <a href="{% url 'notes:note_delete' note.pk %}" class="btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="no-notes">No notes found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

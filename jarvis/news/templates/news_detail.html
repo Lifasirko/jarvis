@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>{{ news.title }}</h1>
+
+    {% if news.caption %}
+        <div>{{ news.caption }}</div>
+    {% endif %}
+
+    <div>{{ news.author }} {{ news.time }}</div>
+
+    <figure>
+        {% if news.image %}
+            <a href="{{ news.image }}" target="_blank">
+                <img src="{{ news.image }}" alt="{{ news.title }}">
+            </a>
+        {% endif %}
+        <figcaption>
+            {% if news.image_caption %}
+                {{ news.image_caption }}
+            {% endif %}
+        </figcaption>
+    </figure>
+
+    <p>{{ news.content }}</p>
+
+{% endblock %}

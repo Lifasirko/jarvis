@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Upcoming Birthdays</h2>
+{% if upcoming_birthdays %}
+<ul>
+    {% for contact in upcoming_birthdays %}
+    <li>
+        <a href="{% url 'contacts:fulldata_contact' contact.id %}">{{ contact.name }}</a> - {{ contact.birthday }}
+        <a href="{% url 'contacts:update_contact' contact.id %}" class="btn btn-primary">Update</a>
+        <a href="{% url 'contacts:delete_contact' contact.id %}" class="btn btn-secondary">Delete</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No upcoming birthdays this week.</p>
+{% endif %}
+
+<h2>All Contacts</h2>
+<form method="GET" action="{% url 'contacts:contact_list' %}">
+    <input type="text" name="query" value="{{ query }}" placeholder="Search by name or phone">
+    <button type="submit">Search</button>
+</form>
+
+<a href="{% url 'contacts:add_contact' %}" class="btn btn-primary">Add Contact</a>
+
+{% if contacts %}
+<ul>
+    {% for contact in contacts %}
+    <li>
+        <a href="{% url 'contacts:fulldata_contact' contact.id %}">{{ contact.name }}</a> - {{ contact.phone_number }}
+        <a href="{% url 'contacts:update_contact' contact.id %}" class="btn btn-primary">Update</a>
+        <a href="{% url 'contacts:delete_contact' contact.id %}" class="btn btn-secondary">Delete</a>
+    </li>
+    {% endfor %}
+</ul>
+<nav>
+    <div class="pager">
+        <span class="previous">
+            <a class="{% if not contacts.has_previous %} disabled {% endif %}"
+            href="{% if contacts.has_previous %} {% url 'contacts:contact_list' page=contacts.previous_page_number %} {% else %} # {% endif %}">
+            <span aria-hidden="true">←</span>
+            Previous</a>
+        </span>
+       <span class="next">
+            <a class="{% if not contacts.has_next %} disabled {% endif %}"
+            href="{% if contacts.has_next %} {% url 'contacts:contact_list' page=contacts.next_page_number %} {% else %} # {% endif %}">Next
+            <span aria-hidden="true">→</span></a>
+       </span>
+    </div>
+</nav>
+{% else %}
+<p>No contacts found.</p>
+{% endif %}
+{% endblock %}
+
+<script>
+    const themeToggle = document.getElementById("theme-toggle");
+    const body = document.body;
+
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+        body.classList.add("light-mode");
+    }
+
+    themeToggle.addEventListener("click", () => {
+        body.classList.toggle("light-mode");
+        const currentTheme = body.classList.contains("light-mode")
+            ? "light"
+            : "dark";
+        localStorage.setItem("theme", currentTheme);
+    });
+</script>

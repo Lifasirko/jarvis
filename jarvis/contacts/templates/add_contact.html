@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Add Contact{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+    <h1>Add New Contact</h1>
+    <form method="POST" action="{% url 'contacts:add_contact' %}">
+        {% csrf_token %}
+        <div class="form-group pt-2">
+            <label>Name</label>
+            <div>{{ form.name }}</div>
+            <span>{{ form.errors.name }}</span>
+        </div>
+        <div class="form-group pt-2">
+            <label>Address</label>
+            <div>{{ form.address }}</div>
+            <span>{{ form.errors.address }}</span>
+        </div>
+        <div class="form-group pt-2">
+            <label>Phone number</label>
+            <div>{{ form.phone_number }}</div>
+            <span>{{ form.errors.phone_number }}</span>
+        </div>
+        <div class="form-group pt-2">
+            <label>Email</label>
+            <div>{{ form.email }}</div>
+            <span>{{ form.errors.email }}</span>
+        </div>
+        <div class="form-group pt-2">
+            <label>Birthday</label>
+            <div>{{ form.birthday }}</div>
+            <span>{{ form.errors.birthday }}</span>
+        </div>
+        <div class="grid mt-4">
+            <input type="submit" value="Submit" class="btn btn-primary">
+            <a href="{% url 'contacts:contact_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const birthdayField = document.querySelector('input[name="birthday"]');
+        birthdayField.type = 'date';
+    });
+</script>
+
+{% endblock %}
+
+<footer class="footer">
+    <p>&copy; 2024 Jarvis - Personal Assistant. All rights reserved.</p>
+</footer>
+
+<style>
+    .form-container {
+        padding: 25px;
+        background-color: rgba(31, 31, 31, 0.8);
+        border: 2px solid #4caf50;
+        border-radius: 12px;
+        margin: 20px auto;
+        width: 90%;
+        max-width: 900px;
+        text-align: center;
+        margin-bottom: 120px;
+        position: relative;
+        padding-bottom: 80px;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 1rem;
+        background-color: rgba(31, 31, 31, 0.8);
+        border-top: 3px solid #4caf50;
+        width: 100%;
+        color: #ffffff;
+        box-sizing: border-box;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+    }
+</style>

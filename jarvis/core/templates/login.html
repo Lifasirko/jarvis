@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block content %}
+<h2>Login</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+    <div class="grid">
+        <button type="reset" class="secondary">Reset</button>
+    </div>
+    <div class="small text-center">
+        <a href="{% url 'password_reset' %}" class="text-center"><i>Forgot Password?</i></a>
+    </div>
+</form>
+
+<div class="text-center">
+    <h3>OR</h3>
+    {% providers_media_js %}
+    <a href="{% provider_login_url "google" %}" class="btn btn-danger">
+        Login with Google
+    </a>
+</div>
+{% endblock %}

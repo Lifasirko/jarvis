@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .contact-detail {
+        text-align: center;
+        border: 2px solid #00aaff;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: inherit;
+        width: 90%;
+        max-width: 600px;
+        margin: 20px auto;
+        color: inherit;
+    }
+
+    .contact-detail p {
+        color: inherit;
+    }
+
+    .btn {
+        background-color: #00aaff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+        width: calc(100% - 20px);
+        max-width: 200px;
+    }
+
+    .btn-secondary {
+        background-color: #0077cc;
+    }
+
+    .btn-primary {
+        background-color: #4caf50;
+    }
+
+    .btn-primary:hover {
+        background-color: #388e3c;
+    }
+
+    .btn-secondary:hover {
+        background-color: #005fa3;
+    }
+
+    .grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    @media (max-width: 480px) {
+        .contact-detail {
+            padding: 15px;
+        }
+
+        .btn {
+            font-size: 14px;
+            padding: 8px 15px;
+            margin: 4px;
+        }
+    }
+</style>
+
+<script>
+    function toggleTheme() {
+        const body = document.body;
+        const newTheme = body.classList.contains('light-mode') ? 'dark' : 'light';
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', newTheme);
+    }
+
+    window.onload = function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.body.classList.toggle('light-mode', theme === 'light');
+    }
+</script>
+
+<div class="contact-detail">
+    <h3 class="contact_name">{{ contact.name }}</h3>
+    <p><strong>Address:</strong> <span class="contact-address">{{ contact.address }}</span></p>
+    <p><strong>Phone number:</strong> <span class="contact-phone-number">{{ contact.phone_number }}</span></p>
+    <p><strong>Email:</strong> <span class="contact-email">{{ contact.email }}</span></p>
+    <p><strong>Birthday:</strong> <span class="contact-birthday">{{ contact.birthday }}</span></p>
+</div>
+
+<div class="grid mt-4">
+    <a href="{% url 'contacts:update_contact' contact.id %}" class="btn btn-secondary">Update</a>
+    <a href="{% url 'contacts:delete_contact' contact.id %}" class="btn btn-secondary">Delete</a>
+    <a href="{% url 'contacts:contact_list' %}" class="btn btn-primary">Back</a>
+</div>
+
+{% endblock %}
