@@ -14,35 +14,30 @@ class TagForm(forms.ModelForm):
         fields = ['name']
 
 class NoteForm(forms.ModelForm):
-    """
-    Form for creating and updating Note instances.
-
-    Fields:
-        title (str): The title of the note, entered through a text input field.
-        content (str): The content of the note, entered through a textarea.
-        tags (QuerySet): A multiple choice field for selecting related tags,
-                         displayed as checkboxes.
-        search_tags (str): A text input field for searching tags.
-    """
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
-        label='Tags',  # Optional: Label for the field
-        help_text='Select tags for this note'  # Optional: Help text
+        label='Tags',
+        help_text='Select tags for this note'
+    )
+
+    new_tags = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter new tags, comma-separated'}),
+        label='New Tags'
     )
 
     search_tags = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'Search tags...'})
+        widget=forms.TextInput(attrs={'placeholder': 'Search tags...'}),
+        label='Search Tags'
     )
 
     class Meta:
         model = Note
-        fields = ['title', 'content', 'tags']
+        fields = ['title', 'content', 'tags', 'new_tags']
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Enter the title here'}),
             'content': forms.Textarea(attrs={'placeholder': 'Enter the content here'}),
         }
-
-

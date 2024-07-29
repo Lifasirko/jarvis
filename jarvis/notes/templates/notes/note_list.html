@@ -7,8 +7,16 @@
 
 {% block extra_css %}
     <style>
-        body {
-            background-color: #000;
+        .notes-table {
+            width: 72%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        .notes-table th, .notes-table td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
         }
     </style>
     <link rel="stylesheet" href="{% static 'css/notes.css' %}">
@@ -21,17 +29,16 @@
         <button type="submit">Search</button>
     </form>
     <a href="{% url 'notes:note_create' %}">Add New Note</a>
-    <p></p>
+    <p> </p>
     <a href="{% url 'notes:tag_manage' %}">Edit Tags</a>
+    <p> </p>
 
     {% if notes %}
-        <table>
+        <table class="notes-table">
             <thead>
                 <tr>
                     <th>Title</th>
                     <th>Tags</th>
-                    <th>Created at</th>
-                    <th>Updated at</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -40,8 +47,6 @@
                     <tr>
                         <td>{{ note.title }}</td>
                         <td>{% for tag in note.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-                        <td>{{ note.created_at }}</td>
-                        <td>{{ note.updated_at }}</td>
                         <td>
                             <a href="{% url 'notes:note_detail' note.pk %}">View</a>
                             <a href="{% url 'notes:note_edit' note.pk %}">Edit</a>
@@ -50,10 +55,11 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="6">No notes found.</td>
+                        <td colspan="3">No notes found.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% endif %}
 {% endblock %}
+

@@ -3,13 +3,10 @@ from django.utils import timezone
 from core.models import CustomUser
 
 class Tag(models.Model):
-    """
-    Model to store tags for categorizing notes.
 
-    Attributes:
-        name (CharField): The name of the tag. Maximum length of 255 characters.
-    """
     name = models.CharField(max_length=255, unique=True)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tags', null=True, blank=True)
+
 
     def __str__(self):
         return self.name

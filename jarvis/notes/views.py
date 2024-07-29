@@ -60,40 +60,21 @@ def note_detail(request, pk):
 
 @login_required
 def note_create(request):
-    """
-    Handles the creation of a new note.
-    This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-
-    Returns:
-        HttpResponse: The rendered note creation form page.
-    
-    On POST request:
-        - It processes the submitted form data.
-        - If the form is valid, it creates a new note, associates it with the logged-in user, saves it,
-          and redirects to the note list page.
-    
-    On GET request:
-        - It renders an empty note creation form.
-
-    Additionally, it handles searching for tags based on a 'search' parameter in the GET request.
-
-    Context:
-        form (NoteForm): The form used for creating a new note.
-        note (None): Placeholder for note, set to None for creation.
-        tags (QuerySet): The queryset of tags filtered by the search query.
-        search_query (str): The search query for filtering tags.
-        selected_tags (list): List of selected tags, set to empty for creation.
-    """
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
             note = form.save(commit=False)
-            note.user = request.user 
+            note.user = request.user
             note.save()
-            form.save_m2m() 
+            form.save_m2m()
+
+            # Handle new tags
+            new_tags = form.cleaned_data.get('new_tags')
+            if new_tags:
+                tag_names = [name.strip() for name in new_tags.split(',')]
+                new_tags_objects = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+                note.tags.add(*new_tags_objects)
+
             return redirect('notes:note_list')
     else:
         form = NoteForm()
@@ -109,39 +90,22 @@ def note_create(request):
         'selected_tags': []
     })
 
-
 @login_required
 def note_edit(request, pk):
-    """
-    Handles the editing of an existing note.
-    This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-        pk (int): The primary key of the note to be edited.
-
-    Returns:
-        HttpResponse: The rendered note edit form page.
-    
-    On POST request:
-        - Updates the existing note with the submitted form data and redirects to the note list page.
-
-    On GET request:
-        - Renders the edit form pre-filled with the note's current data.
-
-    Context:
-        form (NoteForm): The form for editing the note.
-        note (Note): The note being edited.
-        tags (QuerySet): Tags filtered by the search query.
-        search_query (str): The search query for filtering tags.
-        selected_tags (list): IDs of tags currently associated with the note.
-    """
     note = get_object_or_404(Note, pk=pk)
 
     if request.method == 'POST':
         form = NoteForm(request.POST, instance=note)
         if form.is_valid():
             form.save()
+
+            # Handle new tags
+            new_tags = form.cleaned_data.get('new_tags')
+            if new_tags:
+                tag_names = [name.strip() for name in new_tags.split(',')]
+                new_tags_objects = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+                note.tags.add(*new_tags_objects)
+
             return redirect('notes:note_list')
     else:
         form = NoteForm(instance=note)
