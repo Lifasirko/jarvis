@@ -20,100 +20,6 @@ from .chatgpt_service import get_chatgpt_response
 from .battery_utils import get_battery_info
 from task_manager.models import Task
 from contacts.models import Contact
-from django.shortcuts import render, redirect
-from .forms import ProfileUpdateForm
-from django.contrib.auth.decorators import login_required
-
-
-@login_required
-def update_profile_view(request):
-    if request.method == 'POST':
-        form = ProfileUpdateForm(request.POST, instance=request.user.profile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    else:
-        form = ProfileUpdateForm(instance=request.user.profile)
-    return render(request, 'core/update_profile.html', {'form': form})
-
-
-@login_required
-def update_profile(request):
-    if request.method == 'POST':
-        profile_form = ProfileUpdateForm(request.POST, instance=request.user)
-        if profile_form.is_valid():
-            profile_form.save()
-            return redirect('profile')
-    else:
-        profile_form = ProfileUpdateForm(instance=request.user)
-
-    return render(request, 'profile.html', {'profile_form': profile_form})
-
-
-@login_required
-def choose_avatar(request):
-    user = request.user
-    avatar_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
-    avatar_choices = [f for f in os.listdir(
-        avatar_dir) if f.endswith(('.png', '.jpg', '.jpeg'))]
-
-    if request.method == 'POST':
-        form = AvatarChoiceForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-
-    return render(request, 'choose_avatar.html', {
-        'avatar_choices': avatar_choices,
-        'current_avatar': user.avatar_choice
-    })
-
-
-@login_required
-def upload_avatar(request):
-    if request.method == 'POST':
-        form = AvatarForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    else:
-        form = AvatarForm(instance=request.user)
-    return render(request, 'upload_avatar.html', {'form': form})
-
-
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        profile_form = ProfileForm(
-            request.POST, request.FILES, instance=request.user)
-        if profile_form.is_valid():
-            profile = profile_form.save(commit=False)
-            if profile_form.cleaned_data['avatar_choice']:
-                profile.avatar = 'image/avatars/' + \
-                    profile_form.cleaned_data['avatar_choice']
-            profile.save()
-            return redirect('profile')
-    else:
-        profile_form = ProfileForm(instance=request.user)
-
-    password_form = CustomPasswordChangeForm(user=request.user)
-
-    return render(request, 'profile.html', {
-        'profile_form': profile_form,
-        'password_form': password_form,
-    })
-
-
-def game(request):
-    return render(request, 'game.html')
-
-
-def get_battery_status(request):
-    battery_level, battery_status = get_battery_info()
-    return JsonResponse({
-        'battery_level': battery_level,
-        'battery_status': battery_status
-    })
 
 
 def chat_view(request):
@@ -129,7 +35,8 @@ def home_view(request):
     today = date.today()
     tasks_today = Task.objects.filter(due_date=today, owner=request.user)
     birthdays_today = Contact.objects.filter(
-        birthday__month=today.month, birthday__day=today.day, user=request.user)
+        birthday__month=today.month, birthday__day=today.day, user=request.user
+    )
 
     context = {
         'tasks_today': tasks_today,
@@ -143,6 +50,7 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
             return redirect('home')
     else:
@@ -175,7 +83,8 @@ def logout_view(request):
 def profile_view(request):
     if request.method == 'POST':
         profile_form = ProfileForm(
-            request.POST, request.FILES, instance=request.user)
+            request.POST, request.FILES, instance=request.user
+        )
         if profile_form.is_valid():
             profile_form.save()
             return redirect('profile')
@@ -194,7 +103,8 @@ def profile_view(request):
 def change_password_view(request):
     if request.method == 'POST':
         password_form = CustomPasswordChangeForm(
-            data=request.POST, user=request.user)
+            data=request.POST, user=request.user
+        )
         if password_form.is_valid():
             user = password_form.save()
             update_session_auth_hash(request, user)
@@ -215,6 +125,49 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     success_url = reverse_lazy('password_reset_done')
     success_message = "An email with instructions to reset your password has been sent to %(email)s."
     subject_template_name = 'password_reset_subject.txt'
+
+
+@login_required
+def update_profile_view(request):
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = ProfileUpdateForm(instance=request.user.profile)
+    return render(request, 'core/update_profile.html', {'form': form})
+
+
+@login_required
+def choose_avatar(request):
+    user = request.user
+    avatar_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+    avatar_choices = [f for f in os.listdir(
+        avatar_dir) if f.endswith(('.png', '.jpg', '.jpeg'))]
+
+    if request.method == 'POST':
+        form = AvatarChoiceForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+
+    return render(request, 'choose_avatar.html', {
+        'avatar_choices': avatar_choices,
+        'current_avatar': user.avatar_choice
+    })
+
+
+@login_required
+def upload_avatar(request):
+    if request.method == 'POST':
+        form = AvatarForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = AvatarForm(instance=request.user)
+    return render(request, 'upload_avatar.html', {'form': form})
 
 
 @login_required
@@ -308,3 +261,15 @@ def delete_user_view(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
     user.delete()
     return redirect('user_list')
+
+
+def get_battery_status(request):
+    battery_level, battery_status = get_battery_info()
+    return JsonResponse({
+        'battery_level': battery_level,
+        'battery_status': battery_status
+    })
+
+
+def game(request):
+    return render(request, 'game.html')

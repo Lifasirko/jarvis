@@ -5,10 +5,18 @@
 {% block content %}
 <h2>Profile Settings</h2>
 
-<!-- Form to change name and email -->
+Form to change name and email
 <form method="post" action="{% url 'update_profile' %}">
     {% csrf_token %}
     <!-- {{ profile_form.as_p }} -->
+    <p>
+    <label for="id_name">Name:</label>
+    <input type="text" name="name" id="id_name" value=""/>
+</p>
+<p>
+    <label for="id_email">Email:</label>
+    <input type="text" name="email" id="id_email" value=""/>
+</p>
     <button type="submit">Update Profile</button>
 </form>
 
