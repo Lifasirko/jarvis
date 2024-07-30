@@ -18,7 +18,8 @@
 
 <h2>All Contacts</h2>
 <form method="GET" action="{% url 'contacts:contact_list' %}">
-    <input type="text" name="query" value="{{ query }}" placeholder="Search by name or phone">
+    <input type="text" name="query" value="{{ query|default:'' }}" placeholder="Search by name or phone">
+
     <button type="submit">Search</button>
 </form>
 
