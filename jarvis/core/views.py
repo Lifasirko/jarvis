@@ -1,5 +1,5 @@
 import mimetypes
-from datetime import date
+from datetime import date, timedelta
 
 from contacts.models import Contact
 # from .rss_feed import fetch_rss_feed
@@ -48,11 +48,24 @@ def home_view(request):
     """
     today = date.today()
     tasks_today = Task.objects.filter(due_date=today, owner=request.user)
-    birthdays_today = Contact.objects.filter(birthday__month=today.month, birthday__day=today.day, user=request.user)
 
+    next_week = today + timedelta(days=7)
+    contacts = Contact.objects.filter(user=request.user).order_by('name')
+    upcoming_birthdays = []
+    for contact in contacts:
+        if contact.birthday:
+            birthday_this_year = contact.birthday.replace(year=today.year)
+            if today <= birthday_this_year <= next_week:
+                upcoming_birthdays.append(contact)
+
+    response = None
+    if request.method == 'POST':
+        prompt = request.POST.get('prompt')
+        response = get_chatgpt_response(prompt)
     context = {
         'tasks_today': tasks_today,
-        'birthdays_today': birthdays_today,
+        'birthdays_today': upcoming_birthdays,
+        'response': response,
     }
     return render(request, 'home.html', context)
 
