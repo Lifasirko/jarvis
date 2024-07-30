@@ -36,7 +36,7 @@ class News(models.Model):
     caption = models.TextField(null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     content = models.TextField()
-    author = models.CharField(max_length=255)
+    author = models.CharField(max_length=255, null=True)
     image = models.URLField(max_length=255, null=True)
     image_caption = models.TextField(null=True)
     published_time = models.DateTimeField(null=True)

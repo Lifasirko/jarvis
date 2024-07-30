@@ -2,9 +2,46 @@
 
 {% block content %}
 
+<style>
+    .news-list-page__card {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--bd);
+    margin-bottom: 1rem;
+    }
+    .news-card {
+    display: flex;
+    flex-direction: column;
+    }
+    .news-card__time {
+    font-weight: bold;
+    color: #0077be;
+    margin-bottom: 0.5rem;
+    }
+    .news-card__title {
+    font-size: 1.1rem;
+    color: var(--body-color);
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    }
+    .news-card__badge {
+    color: #ff6600;
+    text-transform: uppercase;
+    }
+    .form-group {
+    margin-bottom: 1rem;
+    }
+    .pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    }
+   </style>
+
 <h1>News List</h1>
 
-<div><a href="{% url 'news:news_update' %}" class="btn btn-primary">Update news</a></div>
+<div>
+    <a href="{% url 'news:news_update' %}" class="btn btn-primary">Update news</a>
+</div>
 
 <form method="get" action="{% url 'news:news_list' %}">
     <label for="category">Sort by category:</label>
@@ -20,12 +57,21 @@
 
 {% for n in all_news %}
 
-    <div class = "news_item mt-3">
-        <h4><a href="{% url 'news:news_detail' n.title %}">{{ n.title }}</a></h4>
-        <div>{{ n.category }}</div>
-        <div>{{ n.published_time }}</div>
-        <div>From {{ n.source }}</div>
-    </div>
+    <article class="news-card news-list-page__card">
+        <div>
+            {% if n.published_time %}
+                <time class="news-card__time">
+                    {{ n.published_time }}
+                </time>
+            {% endif %}
+            <a href="{% url 'news:news_detail' n.title %}" class="news-card__title">
+                {{ n.title }}
+            </a>
+            <span class="news-card__badge">
+                {{ n.category }}
+            </span>
+        </div>
+    </article>
 
 {% endfor %}
 
