@@ -1,6 +1,7 @@
 import os
 import mimetypes
 from datetime import date
+from .forms import CustomUserCreationForm
 
 from django.conf import settings
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
