@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<h2>Upload New Avatar</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if request.user.avatar %}
+    <div>
+        <label>Current Avatar:</label>
+        <img src="{{ request.user.avatar.url }}" alt="Avatar" style="max-width: 150px; max-height: 150px;">
+    </div>
+    {% else %}
+    <p>No avatar uploaded.</p>
+    {% endif %}
+    <button type="submit">Upload Avatar</button>
+</form>
+
+<p><a href="{% url 'choose_avatar' %}">Choose Avatar from Existing Options</a></p>
+{% endblock %}

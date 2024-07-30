@@ -310,13 +310,26 @@
     </style>
 </head>
 <body>
+    
+    <div>
+            
+        </div>
     <nav class="navbar navbar-expand-lg navbar-light">
+        
         <a class="navbar-brand" href="{% url 'home' %}"></a>
+        {% if current_avatar %}
+        <img src="{% static 'image/avatars/'|add:current_avatar %}" alt="User Avatar" style="width: 150px; height: 150px; border-radius: 50%;">
+        {% else %}
+        <img src="{% static 'image/avatars/default_avatar.png' %}" alt="Default Avatar" style="width: 150px; height: 150px; border-radius: 50%;">
+        {% endif %}
+
         <div class="info-bar">
             <div class="exchange-rate" id="exchange-rate"></div>
             <div id="weather" class="weather-info"></div>
             <!-- <div id="battery" class="battery-info"></div> -->
         </div>
+        
+
 
         <script>
             async function fetchExchangeRates() {

@@ -9,8 +9,15 @@ from notes.views import note_list
 from contacts.views import contact_list_view
 from news.views import news_list
 from task_manager.views import task_list_view
+from django.urls import path
+from .views import upload_avatar, choose_avatar
+from .views import choose_avatar
+
 
 urlpatterns = [
+    path('choose-avatar/', choose_avatar, name='choose_avatar'),
+    path('upload-avatar/', upload_avatar, name='upload_avatar'),
+    path('choose-avatar/', choose_avatar, name='choose_avatar'),
     path('game/', views.game, name='game'),
     path('get-battery-status/', views.get_battery_status, name='get_battery_status'),
     path('', views.chat_view, name='home'),
@@ -30,6 +37,7 @@ urlpatterns = [
          name='password_reset_complete'),
 
     path('profile/', profile_view, name='profile'),
+    path('profile/update/', views.update_profile_view, name='update_profile'),
     path('profile/change-password/', change_password_view, name='change_password'),
 
     # path('dashboard/', dashboard_view, name='dashboard'),

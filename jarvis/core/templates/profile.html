@@ -1,11 +1,56 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
 <h2>Profile Settings</h2>
+
+<!-- Form to change name and email -->
+<form method="post" action="{% url 'update_profile' %}">
+    {% csrf_token %}
+    <!-- {{ profile_form.as_p }} -->
+    <button type="submit">Update Profile</button>
+</form>
+
+<!-- Display current avatar and upload new one -->
 <form method="post" enctype="multipart/form-data" action="{% url 'profile' %}">
     {% csrf_token %}
-    {{ profile_form.as_p }}
-    <button type="submit">Update Profile</button>
+    
+    {% if user.profile.avatar %}
+    <div>
+        <label>Current Avatar:</label>
+        <img src="{{ user.profile.avatar.url }}" alt="Avatar" style="max-width: 150px; max-height: 150px;">
+    </div>
+    {% else %}
+    <!-- <p>No avatar uploaded.</p> -->
+    {% endif %}
+
+    <div>
+        <label for="id_avatar">Upload New Avatar:</label>
+        {{ profile_form.avatar }}
+    </div>
+
+    {% if current_avatar %}
+    <img src="{% static 'image/avatars/'|add:current_avatar %}" alt="User Avatar" style="width: 150px; height: 150px;">
+    {% else %}
+    <img src="{% static 'image/avatars/default_avatar.png' %}" alt="Default Avatar" style="width: 150px; height: 150px;">
+    {% endif %}
+
+    <div>
+        <label for="id_avatar_choice">Choose Existing Avatar:</label>
+        <div style="position: relative;">
+            <select name="avatar_choice" id="id_avatar_choice" onchange="updateAvatarPreview()" style="width: 200px; height: 40px;">
+                {% for avatar in profile_form.avatar_choice.field.choices %}
+                <option value="{{ avatar.0 }}" {% if user.profile.avatar_choice == avatar.0 %}selected{% endif %} data-img="{% static 'image/avatars/' %}{{ avatar.0 }}">
+                    {{ avatar.0 }}
+                </option>
+                {% endfor %}
+            </select>
+            <!-- <img id="avatar_preview" src="{% if user.profile.avatar_choice %}{% static 'image/avatars/' %}{{ user.profile.avatar_choice }}{% else %}{% static 'image/avatars/default-avatar.jpg' %}{% endif %}" alt="Avatar Preview" style="max-width: 150px; max-height: 150px; margin-top: 10px; display: block;"> -->
+        </div>
+    </div>
+
+    <button type="submit">Update Avatar</button>
 </form>
 
 <h2>Change Password</h2>
@@ -14,4 +59,23 @@
     {{ password_form.as_p }}
     <button type="submit">Change Password</button>
 </form>
+
+<!-- <p><a href="{% url 'choose_avatar' %}">Choose Avatar from Existing Options</a></p> -->
+
+<script>
+function updateAvatarPreview() {
+    var select = document.getElementById('id_avatar_choice');
+    var selectedOption = select.options[select.selectedIndex];
+    var imgSrc = selectedOption.getAttribute('data-img');
+    var previewImg = document.getElementById('avatar_preview');
+
+    console.log('Selected image URL:', imgSrc);
+
+    if (imgSrc) {
+        previewImg.src = imgSrc;
+    } else {
+        previewImg.src = '{% static 'image/avatars/default-avatar.jpg' %}';
+    }
+}
+</script>
 {% endblock %}
