@@ -18,10 +18,9 @@ def task_list_view(request):
     tasks = Task.objects.filter(owner=request.user, is_completed=False)
 
     if search_query:
-        tasks = tasks.filter(Q(title__icontains=search_query))
-
-    if tag_query:
-        tasks = tasks.filter(tags__name__icontains=tag_query).distinct()
+        tasks = tasks.filter(
+            Q(title__icontains=search_query) | Q(tags__name__icontains=search_query)
+        ).distinct()
 
     if task_list_id:
         tasks = tasks.filter(task_list_id=task_list_id)
@@ -75,7 +74,7 @@ def task_create_view(request):
 
 @login_required
 def task_update_view(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, owner=request.user)
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
@@ -88,7 +87,7 @@ def task_update_view(request, task_id):
 
 @login_required
 def task_delete_view(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, owner=request.user)
     if request.method == 'POST':
         task.delete()
         return redirect('task_manager:task_list')
@@ -100,6 +99,8 @@ def task_list_create_view(request):
     if request.method == 'POST':
         form = TaskListForm(request.POST)
         if form.is_valid():
+            task_list = form.save(commit=False)
+            task_list.owner = request.user
             form.save()
             return redirect('task_manager:task_list_manage')
     else:
@@ -109,7 +110,7 @@ def task_list_create_view(request):
 
 @login_required
 def task_list_edit_view(request, task_list_id):
-    task_list = get_object_or_404(TaskList, id=task_list_id)
+    task_list = get_object_or_404(TaskList, id=task_list_id, owner=request.user)
     if request.method == 'POST':
         form = TaskListForm(request.POST, instance=task_list)
         if form.is_valid():
@@ -122,7 +123,7 @@ def task_list_edit_view(request, task_list_id):
 
 @login_required
 def task_list_delete_view(request, task_list_id):
-    task_list = get_object_or_404(TaskList, id=task_list_id)
+    task_list = get_object_or_404(TaskList, id=task_list_id, owner=request.user)
     if request.method == 'POST':
         if not Task.objects.filter(task_list=task_list).exists():
             task_list.delete()
@@ -135,6 +136,8 @@ def tag_manage_view(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
         if form.is_valid():
+            tag = form.save(commit=False)
+            tag.owner = request.user
             form.save()
             return redirect('task_manager:tag_manage')
     else:
@@ -151,6 +154,8 @@ def tag_create_view(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
         if form.is_valid():
+            tag = form.save(commit=False)
+            tag.owner = request.user
             form.save()
             return redirect('task_manager:tag_manage')
     else:
@@ -160,7 +165,7 @@ def tag_create_view(request):
 
 @login_required
 def tag_delete_view(request, tag_id):
-    tag = get_object_or_404(Tag, id=tag_id)
+    tag = get_object_or_404(Tag, id=tag_id, owner=request.user)
     if request.method == 'POST':
         tag.delete()
         return redirect('task_manager:tag_manage')
@@ -172,6 +177,8 @@ def task_list_manage_view(request):
     if request.method == 'POST':
         form = TaskListForm(request.POST)
         if form.is_valid():
+            task_list = form.save(commit=False)
+            task_list.owner = request.user
             form.save()
             return redirect('task_manager:task_list_manage')
     else:
@@ -186,7 +193,7 @@ def task_list_manage_view(request):
 
 @login_required
 def tag_edit_view(request, tag_id):
-    tag = get_object_or_404(Tag, id=tag_id)
+    tag = get_object_or_404(Tag, id=tag_id, owner=request.user)
     if request.method == 'POST':
         form = TagForm(request.POST, instance=tag)
         if form.is_valid():
@@ -199,7 +206,7 @@ def tag_edit_view(request, tag_id):
 
 @login_required
 def tasks_in_list_view(request, task_list_id):
-    task_list = get_object_or_404(TaskList, id=task_list_id)
+    task_list = get_object_or_404(TaskList, id=task_list_id, owner=request.user)
     tasks = Task.objects.filter(task_list=task_list, owner=request.user)
     return render(request, 'tasks_in_list.html', {'task_list': task_list, 'tasks': tasks})
 
@@ -234,7 +241,7 @@ def delete_file_for_task_view(request, file_id, task_id):
     file = get_object_or_404(File, id=file_id, user=request.user, task_id=task_id)
     if request.method == 'POST':
         file.delete()
-        return redirect('task_detail', task_id=task_id)
+        return redirect('task_manager:task_detail', task_id=task_id)
     return render(request, 'confirm_delete.html', {'file': file})
 
 
