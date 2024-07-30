@@ -11,6 +11,8 @@ from news.views import news_list
 from task_manager.views import task_list_view
 
 urlpatterns = [
+    path('game/', views.game, name='game'),
+    path('get-battery-status/', views.get_battery_status, name='get_battery_status'),
     path('', views.chat_view, name='home'),
     path('', home_view, name='home'),
     path('register/', register_view, name='register'),

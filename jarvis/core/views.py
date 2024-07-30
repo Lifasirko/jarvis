@@ -25,6 +25,32 @@ from .forms import FileUploadForm
 from .forms import ProfileForm, CustomPasswordChangeForm
 from .models import CustomUser
 from .models import File
+from django.shortcuts import render
+from django.http import JsonResponse
+from .battery_utils import get_battery_info
+# from .battery_utils import get_battery_info
+from django.shortcuts import render
+
+def game(request):
+    return render(request, 'game.html')
+
+def get_battery_status(request):
+    battery_level, battery_status = get_battery_info()
+    return JsonResponse({
+        'battery_level': battery_level,
+        'battery_status': battery_status
+    })
+
+
+
+# def battery_status_view(request):
+#     battery_level, battery_status = get_battery_info()
+    
+#     context = {
+#         'battery_level': battery_level,
+#         'battery_status': battery_status,
+#     }
+#     return render(request, 'battery_status.html', context)
 
 
 # def news_view(request):

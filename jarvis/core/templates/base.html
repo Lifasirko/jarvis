@@ -7,7 +7,6 @@
     {% load static %}
     <link rel="shortcut icon" type="image/png" href="{% static 'image/favicon.png' %}" />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -241,19 +240,32 @@
             background-color: rgba(31, 31, 31, 0.8);
             color: #ffffff;
             font-size: 1rem;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            margin: 0 auto;
+            width: 90%;
+            max-width: 900px;
+            margin-bottom: 20px;
         }
 
         .light-mode .info-bar {
             background-color: rgba(240, 240, 240, 0.9);
             color: #000000;
+            border-color: #66bb6a;
         }
 
-        .weather-info {
-            margin-left: 100px;
+        .weather-info,
+        .battery-info {
+            margin-left: 20px;
         }
 
-        .weather-info strong {
+        .weather-info strong,
+        .battery-info strong {
             font-weight: bold;
+        }
+
+        .battery-info {
+            margin-left: 20px;
         }
 
         @media (max-width: 768px) {
@@ -276,6 +288,12 @@
                 margin-left: 0;
                 margin-top: 10px;
             }
+
+            .battery-info {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
             .footer {
                 text-align: center;
                 padding: 1rem;
@@ -288,6 +306,7 @@
                 bottom: 0;
                 left: 0;
             }
+        }
     </style>
 </head>
 <body>
@@ -296,6 +315,7 @@
         <div class="info-bar">
             <div class="exchange-rate" id="exchange-rate"></div>
             <div id="weather" class="weather-info"></div>
+            <div id="battery" class="battery-info"></div>
         </div>
 
         <script>
@@ -305,8 +325,8 @@
                         "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
                     );
                     const data = await response.json();
-                    const usd = data.find((rate) => rate.cc === "USD");
-                    const eur = data.find((rate) => rate.cc === "EUR");
+                    const usd = data.find(rate => rate.cc === "USD");
+                    const eur = data.find(rate => rate.cc === "EUR");
 
                     const exchangeRateDiv = document.getElementById("exchange-rate");
                     exchangeRateDiv.innerHTML = `
@@ -319,9 +339,7 @@
             }
 
             fetchExchangeRates();
-        </script>
 
-        <script>
             const apiKey = '6210df424ecc751bfce6bc69e06e633c';
 
             function getWeather(lat, lon) {
@@ -335,10 +353,10 @@
                 const weatherDiv = document.getElementById('weather');
                 weatherDiv.innerHTML = `
                     <strong>${data.name}</strong><br>
-                    Temperature: ${data.main.temp} °C<br>
+                    Temperature: ${data.main.temp.toFixed(2)} °C<br>
                     Description: ${data.weather[0].description}<br>
                     Humidity: ${data.main.humidity} %<br>
-                    Wind Speed: ${data.wind.speed} m/s
+                    Wind Speed: ${data.wind.speed.toFixed(2)} m/s
                 `;
             }
 
@@ -357,6 +375,19 @@
             }
 
             getLocation();
+
+            function updateBatteryStatus() {
+                navigator.getBattery().then(battery => {
+                    const batteryDiv = document.getElementById('battery');
+                    batteryDiv.innerHTML = `
+                        Battery Level: ${(battery.level * 100).toFixed(0)}%<br>
+                        Charging: ${battery.charging ? 'Yes' : 'No'}
+                    `;
+                });
+            }
+
+            updateBatteryStatus();
+            setInterval(updateBatteryStatus, 10000);
         </script>
 
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -369,13 +400,14 @@
                 <a class="nav-link" href="{% url 'news' %}">News</a>
                 <a class="nav-link" href="{% url 'task_list' %}">Tasks</a>
                 <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                <a class="nav-item nav-link" href="{% url 'game' %}">Game</a>
                 <form method="post" action="{% url 'logout' %}" style="display: inline">
                     {% csrf_token %}
                     <button type="submit" class="logout-button">Logout</button>
                 </form>
                 {% else %}
                 <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
                 {% endif %}
             </div>
         </div>
