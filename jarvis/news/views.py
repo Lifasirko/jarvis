@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.core.management import call_command
-
+import feedparser
 from .models import News, Category
 
 
@@ -48,14 +48,20 @@ def news_detail(request, title):
 
 
 def news_update(request):
-    """
-    Handles the update of news articles by calling a management command.
-    
-    Args:
-    request (HttpRequest): The request object used to generate this response.
-    
-    Returns:
-    HttpResponseRedirect: Redirects to the news list page after updating.
-    """
-    call_command('update_news')
-    return redirect('news:news_list')
+    feed_url = 'https://www.liga.net/news/all/rss.xml'
+    feed = feedparser.parse(feed_url)
+
+    if feed.bozo:
+        return render(request, 'error.html', {'error': 'Error fetching the news feed'})
+
+    news_items = []
+    for entry in feed.entries:
+        news_items.append({
+            'title': entry.title,
+            'link': entry.link,
+            'published': entry.published,
+            'summary': entry.summary,
+        })
+
+    return render(request, 'news_update.html', {'news_items': news_items})
+

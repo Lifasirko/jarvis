@@ -23,6 +23,7 @@ from task_manager.models import Task
 from contacts.models import Contact
 
 
+@login_required
 def chat_view(request):
     response = None
     if request.method == 'POST':

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Новини</h1>
+  <div><a href="{% url 'news:news_update' %}" class="btn btn-primary">Update news</a></div>
+  <form method="get" action="{% url 'news:news_list' %}">
+    <label for="category">Sort by category:</label>
+    <select id="category" name="category" class="form-control" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for category in categories %}
+        <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category %}selected{% endif %}>
+            {{ category.name }}
+        </option>
+        {% endfor %}
+    </select>
+</form>
+{% for n in all_news %}
+
+    <div class = "news_item mt-3">
+        <h4><a href="{% url 'news:news_detail' n.title %}">{{ n.title }}</a></h4>
+        <div>{{ n.category }}</div>
+        <div>{{ n.published_time }}</div>
+        <div>From {{ n.source }}</div>
+    </div>
+
+{% endfor %}
+
+  <ul>
+    {% for item in news_items %}
+      <li>
+        <a href="{{ item.link }}">{{ item.title }}</a>
+        <p>{{ item.summary }}</p>
+        <small>{{ item.published }}</small>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
