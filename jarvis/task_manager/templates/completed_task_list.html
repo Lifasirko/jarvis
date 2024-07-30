@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Completed Tasks{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .tasks-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .tasks-table th, .tasks-table td {
+        border: 1px solid #444;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .tasks-table th {
+        background-color: #333;
+    }
+
+    .tasks-table td {
+        background-color: #222;
+    }
+
+    .btn-secondary {
+        background-color: #0077cc;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #005fa3;
+    }
+
+    .btn-danger {
+        background-color: #ff4d4d;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .btn-danger:hover {
+        background-color: #cc0000;
+    }
+</style>
+
+<div class="container">
+    <h1>Completed Tasks</h1>
+    <div class="action-buttons">
+        <a href="{% url 'task_manager:task_list' %}" class="btn-secondary">Back to Task List</a>
+    </div>
+    {% if tasks %}
+        <table class="tasks-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Task List</th>
+                    <th>Tags</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.title }}</td>
+                        <td>{{ task.task_list.name }}</td>
+                        <td>{% for tag in task.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                        <td>{{ task.due_date }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="no-tasks">No completed tasks found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

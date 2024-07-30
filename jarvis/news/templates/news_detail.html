@@ -17,9 +17,7 @@
     <h1>{{ news.title }}</h1>
 
     {% if news.caption %}
-
         <div>{{ news.caption }}</div>
-
     {% endif %}
 
     <div>{{ news.author }} {{ news.time }}</div>
@@ -33,8 +31,13 @@
     <figcaption>
         {% if news.image_caption %}
             {{ news.image_caption }}
+
         {% endif %}
-    </figcaption>
+        <figcaption>
+            {% if news.image_caption %}
+                {{ news.image_caption }}
+            {% endif %}
+        </figcaption>
     </figure>
 
     <p>{{ news.content }}</p>

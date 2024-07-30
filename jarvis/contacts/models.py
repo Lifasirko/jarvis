@@ -2,6 +2,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from core.models import CustomUser
 
+
 # Create your models here.
 
 class Contact(models.Model):
@@ -21,4 +22,4 @@ class Contact(models.Model):
     address = models.CharField(max_length=255)
     phone_number = PhoneNumberField(null=False, blank=False, unique=True)
     email = models.EmailField()
-    birthday = models.DateField()
+    birthday = models.DateField(blank=True, null=True)

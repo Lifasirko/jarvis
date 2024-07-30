@@ -9,7 +9,7 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        fields = ['title', 'description', 'due_date', 'task_list', 'tags']
+        fields = ['title', 'description', 'due_date', 'task_list', 'tags', 'is_completed']
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
         }
@@ -30,37 +30,22 @@ class TaskForm(forms.ModelForm):
             task_list = selected_task_list
 
         task.task_list = task_list
-        print("------------------------------------------------------------------------------------------------")
-        print(f"task.task_list = {task.task_list}")
 
         if commit:
             task.save()
 
         new_tags = self.cleaned_data.get('new_tags')
-        print("------------------------------------------------------------------------------------------------")
-        print(f"new_tags = {new_tags}")
+        selected_tags = self.cleaned_data.get('tags')
+
+        tags = list(selected_tags)
         if new_tags:
             tag_names = [name.strip() for name in new_tags.split(',')]
-            tags = [Tag.objects.get_or_create(name=name, defaults={'owner': task.owner})[0] for name in tag_names]
-            print(f"tags saved: {tags}")
-
-            task.save()
-
-            print(f"2Task saved: {task.tags}")
-
-            task.tags.set(tags)
-            print(f"3Task saved: {task.tags}")
-
-            task.save()
-            print(f"4Task saved: {task.tags}")
-
-        print("------------------------------------------------------------------------------------------------")
-        print(f"task.tags = {task.tags}")
-        print(f"task.tags.set(tags) = {task.tags.set(tags)}")
+            new_tags = [Tag.objects.get_or_create(name=name, defaults={'owner': task.owner})[0] for name in tag_names]
+            tags.extend(new_tags)
 
         if commit:
             task.save()
-            self.save_m2m()
+            task.tags.set(tags)
 
         return task
 
@@ -68,4 +53,10 @@ class TaskForm(forms.ModelForm):
 class TaskListForm(forms.ModelForm):
     class Meta:
         model = TaskList
+        fields = ['name']
+
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
         fields = ['name']

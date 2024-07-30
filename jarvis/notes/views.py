@@ -1,9 +1,11 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Note, Tag
-from core.models import CustomUser
-from .forms import NoteForm, TagForm
+from core.forms import FileUploadForm
+from core.models import File
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.shortcuts import render, get_object_or_404, redirect
+
+from .forms import NoteForm, TagForm
+from .models import Note, Tag
 
 
 @login_required
@@ -39,21 +41,18 @@ def note_list(request):
     return render(request, 'notes/note_list.html', context)
 
 
-# @login_required
+@login_required
 def note_detail(request, pk):
-    """
-    Renders the detail page for a single note.
-    This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-        pk (int): The primary key of the note to be displayed.
-
-    Returns:
-        HttpResponse: The rendered note detail page.
-    """
-    note = get_object_or_404(Note, pk=pk)
-    return render(request, 'notes/note_detail.html', {'note': note})
+    note = get_object_or_404(Note, pk=pk, owner=request.user)
+    if request.method == 'POST':
+        form = NoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            return redirect('notes/note_detail', note_id=note.id)
+    else:
+        form = NoteForm(instance=note)
+    files = note.files.all()
+    return render(request, 'notes/note_detail.html', {'form': form, 'note': note, 'files': files})
 
 
 @login_required
@@ -89,9 +88,9 @@ def note_create(request):
         form = NoteForm(request.POST)
         if form.is_valid():
             note = form.save(commit=False)
-            note.user = request.user 
+            note.user = request.user
             note.save()
-            form.save_m2m() 
+            form.save_m2m()
             return redirect('notes:note_list')
     else:
         form = NoteForm()
@@ -157,8 +156,6 @@ def note_edit(request, pk):
     })
 
 
-
-
 @login_required
 def tag_manage(request, delete_tag_id=None):
     """
@@ -202,7 +199,7 @@ def tag_manage(request, delete_tag_id=None):
                 return redirect('notes:tag_manage')
     else:
         form = TagForm()
-        
+
         if delete_tag_id:
             tag = get_object_or_404(Tag, pk=delete_tag_id)
             return render(request, 'notes/tag_confirm_delete.html', {'tag': tag})
@@ -211,6 +208,36 @@ def tag_manage(request, delete_tag_id=None):
         tags = Tag.objects.filter(name__icontains=search_query)
 
     return render(request, 'notes/tag_manage.html', {'form': form, 'tags': tags, 'search_query': search_query})
+
+
+@login_required
+def tag_create(request):
+    """
+    Handles the creation of a new tag.
+    This view requires the user to be logged in.
+
+    Args:
+        request (HttpRequest): The request object used to generate this response.
+
+    Returns:
+        HttpResponse: The rendered tag creation form page.
+
+    On POST request:
+        - It processes the submitted form data.
+        - If the form is valid, it creates a new tag, saves it,
+          and redirects to the tag management page.
+
+    On GET request:
+        - It renders an empty tag creation form.
+    """
+    if request.method == 'POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('notes:tag_manage')
+    else:
+        form = TagForm()
+    return render(request, 'notes/tag_form.html', {'form': form})
 
 
 @login_required
@@ -232,3 +259,30 @@ def note_delete(request, pk):
         note.delete()
         return redirect('notes:note_list')
     return render(request, 'notes/note_confirm_delete.html', {'note': note})
+
+
+@login_required
+def upload_file_for_note_view(request, note_id):
+    note = get_object_or_404(Note, id=note_id, user=request.user)
+    if request.method == 'POST':
+        form = FileUploadForm(request.POST, request.FILES)
+        form.instance.user = request.user
+        if form.is_valid():
+            file_instance = form.save(commit=False)
+            file_instance.user = request.user
+            file_instance.note = note
+            file_instance.save()
+            return redirect('note_detail', note_id=note.id)
+    else:
+        form = FileUploadForm()
+
+    return render(request, 'upload_file.html', {'form': form, 'note': note})
+
+
+@login_required
+def delete_file_for_note_view(request, file_id, note_id):
+    file = get_object_or_404(File, id=file_id, user=request.user, note_id=note_id)
+    if request.method == 'POST':
+        file.delete()
+        return redirect('note_detail', note_id=note_id)
+    return render(request, 'confirm_delete.html', {'file': file})

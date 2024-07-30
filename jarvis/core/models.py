@@ -2,7 +2,8 @@ import mimetypes
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils import timezone
+from notes.models import Note
+from task_manager.models import Task
 
 
 class CustomUser(AbstractUser):
@@ -83,16 +84,6 @@ def user_directory_path(instance, filename):
 
 # >>>>>>> tasks
 class File(models.Model):
-    """
-    Model to store files uploaded by users.
-
-    Attributes:
-        user (ForeignKey): The user who uploaded the file. Links to the CustomUser model.
-        file (FileField): The uploaded file.
-        category (CharField): The category of the file. Choices are 'image', 'document', 'video', and 'other'.
-        name (CharField): The name of the file.
-        uploaded_at (DateTimeField): The date and time when the file was uploaded.
-    """
     CATEGORY_CHOICES = [
         ('image', 'Image'),
         ('document', 'Document'),
@@ -105,6 +96,8 @@ class File(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True)
     name = models.CharField(max_length=255, default="Untitled")
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True, related_name='files')
+    note = models.ForeignKey(Note, on_delete=models.CASCADE, null=True, blank=True, related_name='files')
 
     def __str__(self):
         return self.name
@@ -112,7 +105,6 @@ class File(models.Model):
     def save(self, *args, **kwargs):
         if not self.category:
             mime_type, _ = mimetypes.guess_type(self.file.name)
-
             if mime_type:
                 if mime_type.startswith('image'):
                     self.category = 'image'
@@ -125,7 +117,6 @@ class File(models.Model):
                     self.category = 'other'
             else:
                 self.category = 'other'
-
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

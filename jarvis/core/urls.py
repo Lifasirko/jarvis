@@ -8,6 +8,7 @@ from .views import home_view, register_view, login_view, logout_view, file_list_
 from notes.views import note_list
 from contacts.views import contact_list_view
 from news.views import news_list
+from task_manager.views import task_list_view
 
 urlpatterns = [
     path('', views.chat_view, name='home'),
@@ -39,6 +40,8 @@ urlpatterns = [
     path('files/delete/<int:file_id>/', delete_file_view, name='delete_file'),
 
     path('news/', news_list, name='news'),
+
+    path('tasks/', task_list_view, name='task_list'),
 
     path('users/', user_list_view, name='user_list'),
     path('users/delete/<int:user_id>/', delete_user_view, name='delete_user'),

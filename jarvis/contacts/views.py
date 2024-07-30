@@ -8,34 +8,36 @@ from .models import Contact
 from .forms import ContactForm
 
 
-# Create your views here.
-
 @login_required
 def contact_list_view(request, page=1):
     query = request.GET.get('query')
     today = date.today()
     next_week = today + timedelta(days=7)
 
+    # Отримати всі контакти користувача
+    contacts = Contact.objects.filter(user=request.user).order_by('name')
+
     # Контакти з днями народження протягом найближчого тижня
-    upcoming_birthdays = Contact.objects.filter(
-        user=request.user,
-        birthday__range=[today, next_week]
-    ).order_by('birthday')
+    upcoming_birthdays = []
+    for contact in contacts:
+        if contact.birthday:
+            birthday_this_year = contact.birthday.replace(year=today.year)
+            if today <= birthday_this_year <= next_week:
+                upcoming_birthdays.append(contact)
 
     # Додамо відлагоджувальні повідомлення
     print(f"Upcoming birthdays: {upcoming_birthdays}")
 
-    # Всі інші контакти
-    contacts = Contact.objects.filter(user=request.user)
+    # Фільтрація контактів за запитом
     if query:
         contacts = contacts.filter(Q(name__icontains=query) | Q(phone_number__icontains=query))
+
+    # Сортування контактів перед пагінацією
+    contacts = contacts.order_by('name')
 
     per_page = 10
     paginator = Paginator(contacts, per_page)
     contacts_on_page = paginator.page(page)
-
-    # Додамо відлагоджувальні повідомлення
-    print(f"All contacts: {contacts_on_page}")
 
     return render(request, 'contact_list.html', {
         'upcoming_birthdays': upcoming_birthdays,
