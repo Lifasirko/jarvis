@@ -2,6 +2,18 @@
 
 {% block content %}
 
+<style>
+    .news-image-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+    .news-image-container img {
+        max-width: 100%;
+        height: auto;
+        display: inline-block;
+    }
+</style>
+
     <h1>{{ news.title }}</h1>
 
     {% if news.caption %}
@@ -10,11 +22,16 @@
 
     <div>{{ news.author }} {{ news.time }}</div>
 
-    <figure>
-        {% if news.image %}
-            <a href="{{ news.image }}" target="_blank">
-                <img src="{{ news.image }}" alt="{{ news.title }}">
-            </a>
+    <figure class="news-image-container">
+    {% if news.image %}
+        <a href="{{ news.image }}" target="_blank">
+            <img src="{{ news.image }}" alt="{{ news.title }}">
+        </a>
+    {% endif %}
+    <figcaption>
+        {% if news.image_caption %}
+            {{ news.image_caption }}
+
         {% endif %}
         <figcaption>
             {% if news.image_caption %}
@@ -24,5 +41,7 @@
     </figure>
 
     <p>{{ news.content }}</p>
+
+    <a href={{ news.source }}>Original source</a>
 
 {% endblock %}
