@@ -41,56 +41,37 @@ def note_list(request):
     return render(request, 'notes/note_list.html', context)
 
 
-@login_required
+# @login_required
 def note_detail(request, pk):
-    note = get_object_or_404(Note, pk=pk, owner=request.user)
-    if request.method == 'POST':
-        form = NoteForm(request.POST, instance=note)
-        if form.is_valid():
-            form.save()
-            return redirect('notes/note_detail', note_id=note.id)
-    else:
-        form = NoteForm(instance=note)
-    files = note.files.all()
-    return render(request, 'notes/note_detail.html', {'form': form, 'note': note, 'files': files})
+    note = get_object_or_404(Note, pk=pk)
+    files = File.objects.filter(note=note)
+    form = FileUploadForm()
+
+    context = {
+        'note': note,
+        'files': files,
+        'form': form,
+    }
+    return render(request, 'notes/note_detail.html', context)
 
 
 @login_required
 def note_create(request):
-    """
-    Handles the creation of a new note.
-    This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-
-    Returns:
-        HttpResponse: The rendered note creation form page.
-    
-    On POST request:
-        - It processes the submitted form data.
-        - If the form is valid, it creates a new note, associates it with the logged-in user, saves it,
-          and redirects to the note list page.
-    
-    On GET request:
-        - It renders an empty note creation form.
-
-    Additionally, it handles searching for tags based on a 'search' parameter in the GET request.
-
-    Context:
-        form (NoteForm): The form used for creating a new note.
-        note (None): Placeholder for note, set to None for creation.
-        tags (QuerySet): The queryset of tags filtered by the search query.
-        search_query (str): The search query for filtering tags.
-        selected_tags (list): List of selected tags, set to empty for creation.
-    """
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
             note = form.save(commit=False)
-            note.user = request.user
+            note.owner = request.user
             note.save()
             form.save_m2m()
+
+            # Handle new tags
+            new_tags = form.cleaned_data.get('new_tags')
+            if new_tags:
+                tag_names = [name.strip() for name in new_tags.split(',')]
+                new_tags_objects = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+                note.tags.add(*new_tags_objects)
+
             return redirect('notes:note_list')
     else:
         form = NoteForm()
@@ -106,39 +87,22 @@ def note_create(request):
         'selected_tags': []
     })
 
-
 @login_required
 def note_edit(request, pk):
-    """
-    Handles the editing of an existing note.
-    This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-        pk (int): The primary key of the note to be edited.
-
-    Returns:
-        HttpResponse: The rendered note edit form page.
-    
-    On POST request:
-        - Updates the existing note with the submitted form data and redirects to the note list page.
-
-    On GET request:
-        - Renders the edit form pre-filled with the note's current data.
-
-    Context:
-        form (NoteForm): The form for editing the note.
-        note (Note): The note being edited.
-        tags (QuerySet): Tags filtered by the search query.
-        search_query (str): The search query for filtering tags.
-        selected_tags (list): IDs of tags currently associated with the note.
-    """
     note = get_object_or_404(Note, pk=pk)
 
     if request.method == 'POST':
         form = NoteForm(request.POST, instance=note)
         if form.is_valid():
             form.save()
+
+            # Handle new tags
+            new_tags = form.cleaned_data.get('new_tags')
+            if new_tags:
+                tag_names = [name.strip() for name in new_tags.split(',')]
+                new_tags_objects = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+                note.tags.add(*new_tags_objects)
+
             return redirect('notes:note_list')
     else:
         form = NoteForm(instance=note)
@@ -154,6 +118,8 @@ def note_edit(request, pk):
         'search_query': search_query,
         'selected_tags': note_tags
     })
+
+
 
 
 @login_required
@@ -199,7 +165,7 @@ def tag_manage(request, delete_tag_id=None):
                 return redirect('notes:tag_manage')
     else:
         form = TagForm()
-
+        
         if delete_tag_id:
             tag = get_object_or_404(Tag, pk=delete_tag_id)
             return render(request, 'notes/tag_confirm_delete.html', {'tag': tag})
@@ -208,36 +174,6 @@ def tag_manage(request, delete_tag_id=None):
         tags = Tag.objects.filter(name__icontains=search_query)
 
     return render(request, 'notes/tag_manage.html', {'form': form, 'tags': tags, 'search_query': search_query})
-
-
-@login_required
-def tag_create(request):
-    """
-    Handles the creation of a new tag.
-    This view requires the user to be logged in.
-
-    Args:
-        request (HttpRequest): The request object used to generate this response.
-
-    Returns:
-        HttpResponse: The rendered tag creation form page.
-
-    On POST request:
-        - It processes the submitted form data.
-        - If the form is valid, it creates a new tag, saves it,
-          and redirects to the tag management page.
-
-    On GET request:
-        - It renders an empty tag creation form.
-    """
-    if request.method == 'POST':
-        form = TagForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('notes:tag_manage')
-    else:
-        form = TagForm()
-    return render(request, 'notes/tag_form.html', {'form': form})
 
 
 @login_required
@@ -263,7 +199,7 @@ def note_delete(request, pk):
 
 @login_required
 def upload_file_for_note_view(request, note_id):
-    note = get_object_or_404(Note, id=note_id, user=request.user)
+    note = get_object_or_404(Note, id=note_id, owner=request.user)
     if request.method == 'POST':
         form = FileUploadForm(request.POST, request.FILES)
         form.instance.user = request.user

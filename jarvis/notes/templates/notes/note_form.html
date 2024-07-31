@@ -59,11 +59,45 @@
         }
     </style>
 
-    <h1>{% if note.pk %}Edit{% else %}New{% endif %} Note</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">{% if note.pk %}Update{% else %}Save{% endif %}</button>
+
+    <h1>{% if note %}Edit{% else %}New{% endif %} Note</h1>
+    <h2>Tags</h2>
+    <!-- Search form -->
+    <form method="get" action="{% url 'notes:note_create' %}">
+        <input type="text" name="search" placeholder="Search tags..." value="{{ search_query }}">
+        <button type="submit">Search</button>
     </form>
-    <a href="{% url 'notes:note_list' %}" class="btn-back">Back to Notes</a>
+
+    <!-- Note form -->
+    <form method="post" action="{% if note %}{% url 'notes:note_edit' note.pk %}{% else %}{% url 'notes:note_create' %}{% endif %}">
+        {% csrf_token %}
+
+        <div class="tag-list">
+            {% for tag in tags %}
+                <label>
+                    <input type="checkbox" name="tags" value="{{ tag.id }}"
+                        {% if tag.id in selected_tags %}checked{% endif %}>
+                    {{ tag.name }}
+                </label><br>
+            {% endfor %}
+        </div>
+
+        <div>
+            <label for="{{ form.new_tags.id_for_label }}">New Tags:</label>
+            {{ form.new_tags }}
+        </div>
+
+        <div>
+            <label for="{{ form.title.id_for_label }}">Title:</label>
+            {{ form.title }}
+        </div>
+        
+        <div>
+            <label for="{{ form.content.id_for_label }}">Content:</label>
+            {{ form.content }}
+        </div>
+
+        <button type="submit">{% if note %}Update{% else %}Save{% endif %}</button>
+    </form>
+    <a href="{% url 'notes:note_list' %}">Back to Notes</a>
 {% endblock %}
