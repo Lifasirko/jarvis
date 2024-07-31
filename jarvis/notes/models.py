@@ -11,8 +11,9 @@ class Tag(models.Model):
         name (CharField): The name of the tag. Maximum length of 255 characters.
     """
     name = models.CharField(max_length=255, unique=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tags', null=True,
-                              blank=True)
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notes_tags', null=True, blank=True)
+
 
     def __str__(self):
         return self.name
@@ -38,4 +39,4 @@ class Note(models.Model):
     tags = models.ManyToManyField(Tag)
 
     def __str__(self):
-        return self.content
+        return self.title

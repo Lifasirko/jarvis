@@ -16,16 +16,6 @@ class TagForm(forms.ModelForm):
 
 
 class NoteForm(forms.ModelForm):
-    """
-    Form for creating and updating Note instances.
-
-    Fields:
-        title (str): The title of the note, entered through a text input field.
-        content (str): The content of the note, entered through a textarea.
-        tags (QuerySet): A multiple choice field for selecting related tags,
-                         displayed as checkboxes.
-        search_tags (str): A text input field for searching tags.
-    """
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple,

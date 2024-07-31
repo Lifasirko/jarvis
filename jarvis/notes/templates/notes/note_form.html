@@ -19,7 +19,7 @@
     </style>
 {% endblock %}
 
-{% block content %}
+
     <h1>{% if note %}Edit{% else %}New{% endif %} Note</h1>
     <h2>Tags</h2>
     <!-- Search form -->
@@ -60,4 +60,6 @@
         <button type="submit">{% if note %}Update{% else %}Save{% endif %}</button>
     </form>
     <a href="{% url 'notes:note_list' %}">Back to Notes</a>
+
 {% endblock %}
+
