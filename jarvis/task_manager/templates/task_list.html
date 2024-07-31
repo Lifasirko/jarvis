@@ -119,12 +119,8 @@
 
 <div class="container">
     <h1>Tasks</h1>
-    <form method="get" action="{% url 'task_manager:task_list' %}" class="search-form">
-        <input type="text" name="q" placeholder="Search tasks by title..." class="search-input">
-        <button type="submit" class="search-button">Search</button>
-    </form>
-    <form method="get" action="{% url 'task_manager:task_list' %}" class="search-form">
-        <input type="text" name="tag" placeholder="Search tasks by tag..." class="search-input">
+    <form method="get" action="{% url 'task_manager:task_list' %}">
+        <input type="text" name="q" placeholder="Search tasks by title or tag..." class="search-input">
         <button type="submit" class="search-button">Search</button>
     </form>
     <form method="get" action="{% url 'task_manager:task_list' %}" class="search-form">
@@ -163,10 +159,10 @@
                         <td>{% for tag in task.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                         <td>{{ task.due_date }}</td>
                         <td>
-                            <a href="{% url 'task_manager:task_detail' task.pk %}" class="btn-secondary">🔍</a>
-                            <a href="{% url 'task_manager:task_update' task.pk %}" class="btn-secondary">🖊</a>
-                            <a href="{% url 'task_manager:task_delete' task.pk %}" class="btn-danger">🗑</a>
-                            <a href="{% url 'task_manager:mark_task_as_completed' task.pk %}" class="btn-completed">✅</a>
+                            <a href="{% url 'task_manager:task_detail' task.pk %}" class="btn-secondary">Viev</a>
+                            <a href="{% url 'task_manager:task_update' task.pk %}" class="btn-secondary">Edit</a><br><br><br>
+                            <a href="{% url 'task_manager:task_delete' task.pk %}" class="btn-danger">Delete</a>
+                            <a href="{% url 'task_manager:mark_task_as_completed' task.pk %}" class="btn-completed">Done</a>
                         </td>
                     </tr>
                 {% empty %}

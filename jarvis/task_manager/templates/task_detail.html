@@ -1,16 +1,17 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h2>{{ task.title }}</h2>
+<h2>Task: {{ task.title }}</h2>
 <p>{{ task.description }}</p>
 <p>Due Date: {{ task.due_date }}</p>
+<p>Task List: {{ task.task_list.name }}</p>
+<p>Tags: {% for tag in task.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 
-<h3>Files</h3>
+<h3>Files:</h3>
 <ul>
     {% for file in files %}
     <li>
-        <a href="{{ file.file.url }}">{{ file.name }}</a>
-        <form action="{% url 'task_manager:delete_file_for_task' file.id task.id %}" method="post" style="display:inline;">
+        <a href="{{ file.file.url }}">{{ file.file.name }}</a>
+        <form action="{% url 'task_manager:delete_file_for_task' task.id file.id %}" method="post" style="display:inline;">
             {% csrf_token %}
             <button type="submit">Delete</button>
         </form>
@@ -31,5 +32,5 @@
     <button type="submit" class="btn btn-primary">Upload</button>
 </form>
 
-<a href="{% url 'task_manager:task_list' %}">Back to Task List</a>
+<a href="{% url 'task_manager:task_list' %}">Back to task list</a>
 {% endblock %}

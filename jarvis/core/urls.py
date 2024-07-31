@@ -4,14 +4,13 @@ from django.urls import path
 from . import views
 from .views import home_view, register_view, login_view, logout_view, file_list_view, user_list_view, \
     delete_user_view, upload_file_view, delete_file_view, \
-    profile_view, change_password_view
+    profile_view, change_password_view, game
 from notes.views import note_list
 from contacts.views import contact_list_view
 from news.views import news_list
 from task_manager.views import task_list_view
 
 urlpatterns = [
-    path('', views.chat_view, name='home'),
     path('', home_view, name='home'),
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),
@@ -46,5 +45,6 @@ urlpatterns = [
     path('users/', user_list_view, name='user_list'),
     path('users/delete/<int:user_id>/', delete_user_view, name='delete_user'),
     # path('news/', news_view, name='news'),
-    path('', views.chat_view, name='home'),
+    # path('', views.chat_view, name='home'),
+    path('game/', game, name='game')
 ]

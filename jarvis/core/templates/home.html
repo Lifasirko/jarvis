@@ -74,6 +74,18 @@
 <h1>Welcome to Jarvis, {{ user.username }}!</h1>
 <p>This is the home page of your personal assistant project.</p>
 
+<form method="post">
+  {% csrf_token %}
+  <input type="text" name="prompt" placeholder="Ask Jarvis" required>
+  <button type="submit">Ask</button>
+</form>
+{% if response %}
+<div class="response">
+  <h3>Response from Jarvis:</h3>
+  <p>{{ response }}</p>
+</div>
+{% endif %}
+
 <div class="container section">
   <h3>Tasks for Today</h3>
   <ul>
@@ -107,17 +119,17 @@
   </ul>
 </div>
 
-<form method="post">
-  {% csrf_token %}
-  <input type="text" name="prompt" placeholder="Ask Jarvis" required>
-  <button type="submit">Ask</button>
-</form>
-{% if response %}
-<div class="response">
-  <h3>Response from Jarvis:</h3>
-  <p>{{ response }}</p>
-</div>
-{% endif %}
+<!--<form method="post">-->
+<!--  {% csrf_token %}-->
+<!--  <input type="text" name="prompt" placeholder="Ask Jarvis" required>-->
+<!--  <button type="submit">Ask</button>-->
+<!--</form>-->
+<!--{% if response %}-->
+<!--<div class="response">-->
+<!--  <h3>Response from Jarvis:</h3>-->
+<!--  <p>{{ response }}</p>-->
+<!--</div>-->
+<!--{% endif %}-->
 
 <div class="social-media">
   <a href="https://www.facebook.com" target="_blank" title="Facebook">Facebook</a>

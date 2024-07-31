@@ -14,10 +14,8 @@ def contact_list_view(request, page=1):
     today = date.today()
     next_week = today + timedelta(days=7)
 
-    # Отримати всі контакти користувача
     contacts = Contact.objects.filter(user=request.user).order_by('name')
 
-    # Контакти з днями народження протягом найближчого тижня
     upcoming_birthdays = []
     for contact in contacts:
         if contact.birthday:
@@ -25,14 +23,9 @@ def contact_list_view(request, page=1):
             if today <= birthday_this_year <= next_week:
                 upcoming_birthdays.append(contact)
 
-    # Додамо відлагоджувальні повідомлення
-    print(f"Upcoming birthdays: {upcoming_birthdays}")
-
-    # Фільтрація контактів за запитом
     if query:
         contacts = contacts.filter(Q(name__icontains=query) | Q(phone_number__icontains=query))
 
-    # Сортування контактів перед пагінацією
     contacts = contacts.order_by('name')
 
     per_page = 10

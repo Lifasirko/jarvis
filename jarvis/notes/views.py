@@ -19,7 +19,7 @@ def note_list(request):
 
     Returns:
         HttpResponse: The rendered note list page, with optional search results.
-    
+
     The function checks for a 'search' parameter in the GET request. If a search query is provided,
     it filters the notes by title or tags, displaying only the notes that match the search criteria.
     If no search query is provided, it displays all notes.
@@ -66,12 +66,12 @@ def note_create(request):
 
     Returns:
         HttpResponse: The rendered note creation form page.
-    
+
     On POST request:
         - It processes the submitted form data.
         - If the form is valid, it creates a new note, associates it with the logged-in user, saves it,
           and redirects to the note list page.
-    
+
     On GET request:
         - It renders an empty note creation form.
 
@@ -91,6 +91,11 @@ def note_create(request):
             note.user = request.user
             note.save()
             form.save_m2m()
+            new_tags = form.cleaned_data.get('new_tags')
+            if new_tags:
+                tag_names = [name.strip() for name in new_tags.split(',')]
+                new_tags_objects = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+                note.tags.add(*new_tags_objects)
             return redirect('notes:note_list')
     else:
         form = NoteForm()
@@ -119,7 +124,7 @@ def note_edit(request, pk):
 
     Returns:
         HttpResponse: The rendered note edit form page.
-    
+
     On POST request:
         - Updates the existing note with the submitted form data and redirects to the note list page.
 
@@ -139,6 +144,11 @@ def note_edit(request, pk):
         form = NoteForm(request.POST, instance=note)
         if form.is_valid():
             form.save()
+            new_tags = form.cleaned_data.get('new_tags')
+            if new_tags:
+                tag_names = [name.strip() for name in new_tags.split(',')]
+                new_tags_objects = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+                note.tags.add(*new_tags_objects)
             return redirect('notes:note_list')
     else:
         form = NoteForm(instance=note)

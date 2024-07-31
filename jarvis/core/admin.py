@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import CustomUser, File, News
+from .models import CustomUser, File
 
 
 # from contacts.models import Contact
@@ -14,4 +14,4 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(File)
 # admin.site.register(Contact)
 # admin.site.register(Note)
-admin.site.register(News)
+# admin.site.register(News)
