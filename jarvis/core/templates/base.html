@@ -237,15 +237,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 1px;
             background-color: rgba(31, 31, 31, 0.8);
             color: #ffffff;
             font-size: 1rem;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            margin: 0 auto;
+            width: 90%;
+            max-width: 330px;
+            margin-bottom: 20px;
         }
 
         .light-mode .info-bar {
             background-color: rgba(240, 240, 240, 0.9);
             color: #000000;
+            border-color: #66bb6a;
         }
 
         .weather-info {
@@ -293,6 +300,13 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="{% url 'home' %}"></a>
+
+        {% if current_avatar %}
+        <img src="{% static 'image/avatars/'|add:current_avatar %}" alt="User Avatar" style="width: 150px; height: 150px; border-radius: 50%;">
+        {% else %}
+        <img src="{% static 'image/avatars/default_avatar.png' %}" alt="Default Avatar" style="width: 150px; height: 150px; border-radius: 50%;">
+        {% endif %}
+
         <div class="info-bar">
             <div class="exchange-rate" id="exchange-rate"></div>
             <div id="weather" class="weather-info"></div>
@@ -305,8 +319,8 @@
                         "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
                     );
                     const data = await response.json();
-                    const usd = data.find((rate) => rate.cc === "USD");
-                    const eur = data.find((rate) => rate.cc === "EUR");
+                    const usd = data.find(rate => rate.cc === "USD");
+                    const eur = data.find(rate => rate.cc === "EUR");
 
                     const exchangeRateDiv = document.getElementById("exchange-rate");
                     exchangeRateDiv.innerHTML = `
@@ -335,10 +349,10 @@
                 const weatherDiv = document.getElementById('weather');
                 weatherDiv.innerHTML = `
                     <strong>${data.name}</strong><br>
-                    Temperature: ${data.main.temp} °C<br>
+                    Temperature: ${data.main.temp.toFixed(2)} °C<br>
                     Description: ${data.weather[0].description}<br>
                     Humidity: ${data.main.humidity} %<br>
-                    Wind Speed: ${data.wind.speed} m/s
+                    Wind Speed: ${data.wind.speed.toFixed(2)} m/s
                 `;
             }
 
@@ -369,6 +383,7 @@
                 <a class="nav-link" href="{% url 'news' %}">News</a>
                 <a class="nav-link" href="{% url 'task_list' %}">Tasks</a>
                 <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                <a class="nav-item nav-link" href="{% url 'game' %}">Game</a>
                 <form method="post" action="{% url 'logout' %}" style="display: inline">
                     {% csrf_token %}
                     <button type="submit" class="logout-button">Logout</button>

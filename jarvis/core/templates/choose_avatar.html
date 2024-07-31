@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<h2>Choose Avatar</h2>
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <label for="id_avatar_choice">Select Avatar:</label>
+        <select name="avatar_choice" id="id_avatar_choice" style="width: 200px; height: 40px;">
+            {% for avatar in avatar_choices %}
+            <option value="{{ avatar }}" {% if current_avatar == avatar %}selected{% endif %}>
+                {{ avatar }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Choose Avatar</button>
+    </div>
+</form>
+
+<h3>Preview:</h3>
+{% if current_avatar %}
+    <img src="{% static 'image/avatars/'|add:current_avatar %}" alt="Current Avatar" style="width: 100px; height: 100px;">
+{% endif %}
+{% endblock %}
