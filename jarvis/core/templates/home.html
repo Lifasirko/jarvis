@@ -100,11 +100,19 @@
 <div class="container section">
   <h3>Birthdays Today</h3>
   <ul>
-    {% for contact in birthdays_today %}
-      <li>{{ contact.name }} - Phone: {{ contact.phone_number }}</li>
-    {% empty %}
-      <li>No birthdays today.</li>
-    {% endfor %}
+   {% if upcoming_birthdays %}
+        <ul>
+            {% for contact in upcoming_birthdays %}
+                <li>
+                    <a href="{% url 'contacts:fulldata_contact' contact.id %}">{{ contact.name }}</a> - {{ contact.birthday }}
+                    <a href="{% url 'contacts:update_contact' contact.id %}" class="btn btn-primary">Update</a>
+                    <a href="{% url 'contacts:delete_contact' contact.id %}" class="btn btn-secondary">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No upcoming birthdays this week.</p>
+    {% endif %}
   </ul>
 </div>
 

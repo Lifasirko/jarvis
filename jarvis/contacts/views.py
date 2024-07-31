@@ -27,6 +27,8 @@ def contact_list_view(request, page=1):
 
     # Додамо відлагоджувальні повідомлення
     print(f"Upcoming birthdays: {upcoming_birthdays}")
+    print(f"Today's date: {today}")
+    print(f"Next week's date: {next_week}")
 
     # Фільтрація контактів за запитом
     if query:
@@ -39,11 +41,16 @@ def contact_list_view(request, page=1):
     paginator = Paginator(contacts, per_page)
     contacts_on_page = paginator.page(page)
 
-    return render(request, 'contact_list.html', {
+    context = {
         'upcoming_birthdays': upcoming_birthdays,
         'contacts': contacts_on_page,
         'query': query
-    })
+    }
+
+    if request.path == '/':
+        return render(request, 'core/home.html', context)
+    else:
+        return render(request, 'contact_list.html', context)
 
 
 @login_required
