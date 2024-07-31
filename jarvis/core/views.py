@@ -1,22 +1,22 @@
 import os
 import mimetypes
 from datetime import date
-from .forms import CustomUserCreationForm
-
 from django.conf import settings
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 
+from .forms import (
+    CustomUserCreationForm, ProfileUpdateForm, AvatarForm, ProfileForm,
+    CustomPasswordChangeForm, AvatarChoiceForm, FileUploadForm
+)
 from .models import CustomUser, File
-from .forms import (ProfileUpdateForm, AvatarForm, ProfileForm, CustomPasswordChangeForm,
-                    AvatarChoiceForm, FileUploadForm)
 from .chatgpt_service import get_chatgpt_response
 from .battery_utils import get_battery_info
 from task_manager.models import Task
@@ -85,8 +85,7 @@ def logout_view(request):
 def profile_view(request):
     if request.method == 'POST':
         profile_form = ProfileForm(
-            request.POST, request.FILES, instance=request.user
-        )
+            request.POST, request.FILES, instance=request.user)
         if profile_form.is_valid():
             profile_form.save()
             return redirect('profile')
@@ -105,8 +104,7 @@ def profile_view(request):
 def change_password_view(request):
     if request.method == 'POST':
         password_form = CustomPasswordChangeForm(
-            data=request.POST, user=request.user
-        )
+            data=request.POST, user=request.user)
         if password_form.is_valid():
             user = password_form.save()
             update_session_auth_hash(request, user)
@@ -189,8 +187,8 @@ def file_list_view(request):
     video_files = files.filter(category='video').count()
     other_files = files.filter(category='other').count()
 
-    used_storage = request.user.get_used_storage() / (1024 * 1024)  # Convert to MB
-    storage_limit = request.user.storage_limit / (1024 * 1024)  # Convert to MB
+    used_storage = request.user.get_used_storage() / (1024 * 1024)
+    storage_limit = request.user.storage_limit / (1024 * 1024)  
     free_storage = storage_limit - used_storage
 
     context = {
