@@ -1,6 +1,4 @@
-from allauth.socialaccount.models import SocialApp
 from django.apps import AppConfig
-from django.contrib.sites.models import Site
 from django.db.models.signals import post_migrate
 
 from jarvis.config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_KEY, SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
@@ -15,6 +13,9 @@ class CoreConfig(AppConfig):
 
 
 def create_site_and_social_app(sender, **kwargs):
+    Site = sender.get_model('sites', 'Site')
+    SocialApp = sender.get_model('socialaccount', 'SocialApp')
+
     site, created = Site.objects.update_or_create(
         id=1,
         defaults={'domain': '127.0.0.1:8000', 'name': 'localhost:8000'}
