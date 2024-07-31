@@ -5,65 +5,62 @@ Jarvis is a versatile personal assistant application designed to help users mana
 
 ## Installation
 
-### Using Poetry
+To run the project, follow these steps:
 
-1. Ensure you have Poetry installed. If not, you can install it using the following command:
-
+1. **Clone the repository**:
    ```sh
-   pip install poetry
+   git clone https://github.com/Lifasirko/jarvis
    ```
 
-2. Clone the repository:
+2. **Fill the .env file**:
+   - Create a `.env` file in the root directory of the project and fill it with the appropriate settings.
 
+3. **Install Poetry**:
+   - Run the following command to install Poetry:
+     ```sh
+     pip install poetry
+     ```
+
+4. **Run Docker Compose**:
+   - Bring up the necessary services using Docker Compose:
+     ```sh
+     docker-compose up -d
+     ```
+
+5. **Navigate to the project directory**:
    ```sh
-   git clone <repository-url>
-   ```
+   cd .\jarvis
 
-3. Navigate to the project directory:
+6. **Apply migrations**:
+   - Run database migrations:
+     ```sh
+     python manage.py migrate
+     ```
 
-   ```sh
-   cd <project-directory>
-   ```
-
-4. Install the dependencies:
-
-   ```sh
-   poetry install
-   ```
-
-5. Activate the virtual environment:
-
-   ```sh
-   poetry shell
-   ```
+7. **Create a superuser**:
+   - Create a superuser for accessing the admin panel:
+     ```sh
+     python manage.py createsuperuser
+     ```
 
 ## Usage
 
-1. Run the Docker containers:
+1. **Run the server**:
+   - Start the development server:
+     ```sh
+     python manage.py runserver 8000
+     ```
 
-   ```sh
-   docker-compose up
-   ```
+2. **Access the project**:
+   - Open a web browser and go to:
+     ```
+     http://127.0.0.1:8000
+     ```
+   - For admin panel access, go to:
+     ```
+     http://127.0.0.1:8000/admin
+     ```
 
-2. Apply migrations:
-
-   ```sh
-   python manage.py migrate
-   ```
-
-3. Create a superuser:
-
-   ```sh
-   python manage.py createsuperuser
-   ```
-
-4. Start the development server:
-
-   ```sh
-   python manage.py runserver
-   ```
-
-5. Open your web browser and go to `http://127.0.0.1:8000/`.
 
 ## Project Structure
 

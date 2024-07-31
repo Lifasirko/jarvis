@@ -49,17 +49,21 @@ def home_view(request):
     Renders the home page with tasks due today and birthdays today.
     """
     today = date.today()
-    tasks_today = Task.objects.filter(due_date=today, owner=request.user)
 
-    next_week = today + timedelta(days=7)
-    contacts = Contact.objects.filter(user=request.user).order_by('name')
-    upcoming_birthdays = []
-    for contact in contacts:
-        if contact.birthday:
-            birthday_this_year = contact.birthday.replace(year=today.year)
-            if today <= birthday_this_year <= next_week:
-                upcoming_birthdays.append(contact)
+    if request.user.is_authenticated:
+        tasks_today = Task.objects.filter(due_date=today, owner=request.user)
 
+        next_week = today + timedelta(days=7)
+        contacts = Contact.objects.filter(user=request.user).order_by('name')
+        upcoming_birthdays = []
+        for contact in contacts:
+            if contact.birthday:
+                birthday_this_year = contact.birthday.replace(year=today.year)
+                if today <= birthday_this_year <= next_week:
+                    upcoming_birthdays.append(contact)
+    else:
+        tasks_today = []
+        upcoming_birthdays = []
     response = None
     if request.method == 'POST':
         prompt = request.POST.get('prompt')

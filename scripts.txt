@@ -22,3 +22,20 @@ cd .\jarvis\
 python manage.py runserver 8000
 
 
+
+
+git clone https://github.com/Lifasirko/jarvis
+
+fill .env file
+
+pip install poetry
+
+docker-compose up -d
+
+cd .\jarvis\
+
+python manage.py migrate
+
+python manage.py createsuperuser
+
+python manage.py runserver 8000
