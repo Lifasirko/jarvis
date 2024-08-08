@@ -18,6 +18,10 @@ Jarvis is a versatile personal assistant application designed to help users mana
    ```sh
    ./setup.sh
    ```
+   or 
+   ```sh
+   ./setup.ps1
+   ```
 
 ## Usage
 
