@@ -7,51 +7,43 @@ Jarvis is a versatile personal assistant application designed to help users mana
 
 ### Using Poetry
 
-1. Ensure you have Poetry installed. If not, you can install it using the following command:
+1. Clone the repository:
 
    ```sh
-   pip install poetry
+   git clone https://github.com/Lifasirko/jarvis.git
    ```
 
-2. Clone the repository:
+2. Run the setup script:
 
    ```sh
-   git clone <repository-url>
-   ```
-
-3. Navigate to the project directory:
-
-   ```sh
-   cd <project-directory>
-   ```
-
-4. Install the dependencies:
-
-   ```sh
-   poetry install
-   ```
-
-5. Activate the virtual environment:
-
-   ```sh
-   poetry shell
+   ./setup.sh
    ```
 
 ## Usage
 
-1. Run the Docker containers:
+### 1.  Check for the `.env` file!
+   - **The list of required fields can be found in `.env.dist`**
+
+
+2. Activate the virtual environment:
+
+   - For Windows:
+     ```sh
+     venv\Scripts\activate
+     ```
+
+   - For Linux/macOS:
+     ```sh
+     source venv/bin/activate
+     ```
+
+3. Navigate to the project directory:
 
    ```sh
-   docker-compose up
+   cd jarvis
    ```
 
-2. Apply migrations:
-
-   ```sh
-   python manage.py migrate
-   ```
-
-3. Create a superuser:
+4. Create a superuser:
 
    ```sh
    python manage.py createsuperuser
