@@ -1,35 +1,39 @@
-# Використовуємо офіційний образ Python з Docker Hub
-FROM python:3.12-slim
+# Stage 1: Builder
+FROM python:3.12-slim AS builder
 
-# Встановлюємо залежності системи
+WORKDIR /app
+
+# Встановлюємо необхідні пакети
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     curl \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Встановлюємо Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
-# Встановлюємо робочу директорію в контейнері
-WORKDIR /app
-
-# Копіюємо файли проекту в контейнер
-COPY . .
-
-# Виставляємо змінні середовища
-ENV PYTHONUNBUFFERED=1
-ENV PATH="/root/.local/bin:${PATH}"
+# Копіюємо файли проекту
+COPY pyproject.toml poetry.lock ./
+COPY ./jarvis ./jarvis
 
 # Встановлюємо залежності з використанням Poetry
-RUN poetry install
+RUN poetry config virtualenvs.create false && poetry install --no-dev
 
-# Перехід до директорії jarvis
-WORKDIR /app/jarvis
+# Stage 2: Runner
+FROM python:3.12-slim AS runner
 
-# Відкриваємо порт 8000 для доступу до додатку
-EXPOSE 8000
+ENV PORT=8000
 
-# Запускаємо команду для старту сервера
-CMD ["poetry", "run", "uvicorn", "jarvis.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
+WORKDIR /app
+
+# Копіюємо файли проекту з builder
+COPY --from=builder /app /app
+
+# Копіюємо .env файл
+COPY .env .env
+
+EXPOSE ${PORT}
+
+# Команда для запуску додатку
+CMD ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:8000", "jarvis.wsgi:application"]

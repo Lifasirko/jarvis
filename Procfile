@@ -1,1 +1,1 @@
-web: gunicorn jarvis.config.wsgi
+web: poetry run gunicorn --bind 0.0.0.0:8000 jarvis.wsgi:application
