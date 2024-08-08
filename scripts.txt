@@ -17,6 +17,7 @@ git pull origin <branch_name>
 python manage.py makemigrations
 python manage.py migrate
 
+python manage.py setup_social_app
 
 cd .\jarvis\
 python manage.py runserver 8000
