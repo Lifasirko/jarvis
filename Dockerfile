@@ -38,6 +38,7 @@ COPY --from=builder /app /app
 # Копіюємо .env файл
 #COPY .env .env
 
+
 # Встановлюємо порт
 ENV PORT=8000
 EXPOSE ${PORT}
