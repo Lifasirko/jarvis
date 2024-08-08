@@ -1,5 +1,5 @@
 from django import forms
-from .models import  Note, Tag
+from .models import Note, Tag
 
 
 class TagForm(forms.ModelForm):
@@ -9,21 +9,13 @@ class TagForm(forms.ModelForm):
     Fields:
         name (str): The name of the tag.
     """
+
     class Meta:
         model = Tag
         fields = ['name']
 
-class NoteForm(forms.ModelForm):
-    """
-    Form for creating and updating Note instances.
 
-    Fields:
-        title (str): The title of the note, entered through a text input field.
-        content (str): The content of the note, entered through a textarea.
-        tags (QuerySet): A multiple choice field for selecting related tags,
-                         displayed as checkboxes.
-        search_tags (str): A text input field for searching tags.
-    """
+class NoteForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple,
@@ -51,5 +43,3 @@ class NoteForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'placeholder': 'Enter the title here'}),
             'content': forms.Textarea(attrs={'placeholder': 'Enter the content here'}),
         }
-
-
