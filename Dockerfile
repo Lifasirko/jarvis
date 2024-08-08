@@ -36,4 +36,4 @@ COPY .env .env
 EXPOSE ${PORT}
 
 # Команда для запуску додатку
-CMD ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:8000", "jarvis.wsgi:application"]
+CMD ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:8000", "jarvis.config.wsgi:application"]
