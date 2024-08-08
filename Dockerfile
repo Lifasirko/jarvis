@@ -31,7 +31,7 @@ WORKDIR /app
 COPY --from=builder /app /app
 
 # Копіюємо .env файл
-COPY .env .env
+#COPY .env .env
 
 EXPOSE ${PORT}
 
