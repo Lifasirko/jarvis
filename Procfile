@@ -1,1 +1,1 @@
-web: gunicorn --bind :8000 jarvis.config.wsgi:application
+web: gunicorn jarvis.config.wsgi
