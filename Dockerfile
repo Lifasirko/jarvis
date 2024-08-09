@@ -17,6 +17,12 @@ COPY requirements.txt ./
 # Встановлюємо залежності
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Встановлюємо Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
+# Додаємо Poetry до системного шляху
+ENV PATH="/root/.local/bin:$PATH"
+
 # Копіюємо файли додатку
 COPY ./jarvis ./jarvis
 
