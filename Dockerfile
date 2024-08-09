@@ -8,20 +8,14 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Встановлюємо Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
-
 # Встановлюємо робочу директорію
 WORKDIR /app
 
-# Додаємо Poetry до системного шляху
-ENV PATH="/root/.local/bin:$PATH"
-
 # Копіюємо файли для встановлення залежностей
-COPY pyproject.toml poetry.lock ./
+COPY requirements.txt ./
 
 # Встановлюємо залежності
-RUN poetry config virtualenvs.create false && poetry install --no-dev
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Копіюємо файли додатку
 COPY ./jarvis ./jarvis
@@ -35,13 +29,9 @@ WORKDIR /app
 # Копіюємо залежності та додаток з попереднього образу
 COPY --from=builder /app /app
 
-# Копіюємо .env файл
-#COPY .env .env
-
-
 # Встановлюємо порт
 ENV PORT=8000
 EXPOSE ${PORT}
 
 # Команда запуску
-CMD ["poetry", "run", "gunicorn", "--bind", ":8000", "jarvis.config.wsgi:application"]
+CMD ["gunicorn", "--bind", ":8000", "jarvis.config.wsgi:application"]
