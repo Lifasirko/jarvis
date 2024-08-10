@@ -3,9 +3,11 @@ from core.models import File
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
-
 from .forms import NoteForm, TagForm
 from .models import Note, Tag
+from django.core.exceptions import ValidationError
+
+
 
 
 @login_required
@@ -22,26 +24,29 @@ def note_list(request):
 
     The function checks for a 'search' parameter in the GET request. If a search query is provided,
     it filters the notes by title or tags, displaying only the notes that match the search criteria.
-    If no search query is provided, it displays all notes.
+    If no search query is provided, it displays all notes belonging to the logged-in user.
 
     Context:
         notes (QuerySet): The queryset of notes to be displayed, either filtered by the search query
-                          or all notes if no search query is provided.
+                          or all notes belonging to the logged-in user if no search query is provided.
     """
     search_query = request.GET.get('search', '')
     if search_query:
         notes = Note.objects.filter(
-            Q(title__icontains=search_query) | Q(tags__name__icontains=search_query)
+            Q(owner=request.user) & (Q(title__icontains=search_query) | Q(tags__name__icontains=search_query))
         ).distinct()
     else:
-        notes = Note.objects.all()
+        notes = Note.objects.filter(owner=request.user)
+    
     context = {
         'notes': notes
     }
     return render(request, 'notes/note_list.html', context)
 
 
-# @login_required
+
+
+@login_required
 def note_detail(request, pk):
     note = get_object_or_404(Note, pk=pk)
     files = File.objects.filter(note=note)
@@ -55,9 +60,10 @@ def note_detail(request, pk):
     return render(request, 'notes/note_detail.html', context)
 
 
+
+
 @login_required
 def note_create(request):
-
     """
     Handles the creation of a new note.
     This view requires the user to be logged in.
@@ -81,11 +87,10 @@ def note_create(request):
     Context:
         form (NoteForm): The form used for creating a new note.
         note (None): Placeholder for note, set to None for creation.
-        tags (QuerySet): The queryset of tags filtered by the search query.
+        tags (QuerySet): The queryset of tags filtered by the search query and owned by the logged-in user.
         search_query (str): The search query for filtering tags.
         selected_tags (list): List of selected tags, set to empty for creation.
     """
-
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
@@ -97,7 +102,7 @@ def note_create(request):
             new_tags = form.cleaned_data.get('new_tags')
             if new_tags:
                 tag_names = [name.strip() for name in new_tags.split(',')]
-                new_tags_objects = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+                new_tags_objects = [Tag.objects.get_or_create(name=name, owner=request.user)[0] for name in tag_names]
                 note.tags.add(*new_tags_objects)
 
             return redirect('notes:note_list')
@@ -105,7 +110,7 @@ def note_create(request):
         form = NoteForm()
 
     search_query = request.GET.get('search', '')
-    tags = Tag.objects.filter(name__icontains=search_query)
+    tags = Tag.objects.filter(owner=request.user).filter(name__icontains=search_query)  # Filter tags by owner
 
     return render(request, 'notes/note_form.html', {
         'form': form,
@@ -115,9 +120,11 @@ def note_create(request):
         'selected_tags': []
     })
 
+
+
+
 @login_required
 def note_edit(request, pk):
-
     """
     Handles the editing of an existing note.
     This view requires the user to be logged in.
@@ -138,12 +145,12 @@ def note_edit(request, pk):
     Context:
         form (NoteForm): The form for editing the note.
         note (Note): The note being edited.
-        tags (QuerySet): Tags filtered by the search query.
+        tags (QuerySet): Tags filtered by the search query and owned by the logged-in user.
         search_query (str): The search query for filtering tags.
         selected_tags (list): IDs of tags currently associated with the note.
     """
 
-    note = get_object_or_404(Note, pk=pk)
+    note = get_object_or_404(Note, pk=pk, owner=request.user)
 
     if request.method == 'POST':
         form = NoteForm(request.POST, instance=note)
@@ -153,7 +160,7 @@ def note_edit(request, pk):
             new_tags = form.cleaned_data.get('new_tags')
             if new_tags:
                 tag_names = [name.strip() for name in new_tags.split(',')]
-                new_tags_objects = [Tag.objects.get_or_create(name=name)[0] for name in tag_names]
+                new_tags_objects = [Tag.objects.get_or_create(name=name, owner=request.user)[0] for name in tag_names]
                 note.tags.add(*new_tags_objects)
 
             return redirect('notes:note_list')
@@ -161,7 +168,7 @@ def note_edit(request, pk):
         form = NoteForm(instance=note)
 
     search_query = request.GET.get('search', '')
-    tags = Tag.objects.filter(name__icontains=search_query)
+    tags = Tag.objects.filter(owner=request.user).filter(name__icontains=search_query)
     note_tags = note.tags.values_list('id', flat=True)
 
     return render(request, 'notes/note_form.html', {
@@ -208,25 +215,33 @@ def tag_manage(request, delete_tag_id=None):
     """
     if request.method == 'POST':
         if delete_tag_id:
-            tag = get_object_or_404(Tag, pk=delete_tag_id)
+            tag = get_object_or_404(Tag, pk=delete_tag_id, owner=request.user)
             tag.delete()
             return redirect('notes:tag_manage')
         else:
             form = TagForm(request.POST)
             if form.is_valid():
-                form.save()
-                return redirect('notes:tag_manage')
+                tag_name = form.cleaned_data.get('name')
+                if Tag.objects.filter(name=tag_name, owner=request.user).exists():
+                    form.add_error('name', 'Tag with this Name already exists for this user.')
+                else:
+                    tag = form.save(commit=False)
+                    tag.owner = request.user
+                    tag.save()
+                    return redirect('notes:tag_manage')
     else:
         form = TagForm()
-        
-        if delete_tag_id:
-            tag = get_object_or_404(Tag, pk=delete_tag_id)
-            return render(request, 'notes/tag_confirm_delete.html', {'tag': tag})
 
-        search_query = request.GET.get('search', '')
-        tags = Tag.objects.filter(name__icontains=search_query)
+    if delete_tag_id:
+        tag = get_object_or_404(Tag, pk=delete_tag_id, owner=request.user)
+        return render(request, 'notes/tag_confirm_delete.html', {'tag': tag})
+
+    search_query = request.GET.get('search', '')
+    tags = Tag.objects.filter(name__icontains=search_query, owner=request.user)
 
     return render(request, 'notes/tag_manage.html', {'form': form, 'tags': tags, 'search_query': search_query})
+
+
 
 
 @login_required
