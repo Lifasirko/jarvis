@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.core.management import call_command
+from django.db.models import Case, When, Value, BooleanField
 
 from .models import News, Category
 
@@ -16,7 +17,13 @@ def news_list(request, page=1):
     Returns:
     HttpResponse: The rendered news list page with list of news articles and their categories.
     """
-    news = News.objects.all().order_by('-published_time')
+    news = News.objects.annotate(
+        has_published_time=Case(
+        When(published_time__isnull=False, then=Value(True)),
+        default=Value(False),
+        output_field=BooleanField(),
+        )
+    ).order_by('-has_published_time', '-published_time')
     categories = Category.objects.all()
 
     category = request.GET.get('category')

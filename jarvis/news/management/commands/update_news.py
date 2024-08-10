@@ -4,6 +4,7 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 from news.models import News, Category
+import time
 
 headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15'}
 
@@ -13,7 +14,7 @@ async def get_news_liga(session, url):
         async with session.get(url, headers=headers) as response:
             if response.status == 200:
                 html = await response.text()
-                soup = BeautifulSoup(html, features="html.parser")
+                soup = BeautifulSoup(html, features="lxml")
                 
                 all_text = soup.find(attrs={"class": "article-body article-grid__body"})
                 text = ' '.join(p.text for i, p in enumerate(all_text.find_all('p')[:-1]) if i != 1) if all_text else None
@@ -55,7 +56,7 @@ async def scraping_liga(session, url):
         async with session.get(url, headers=headers) as response:
             if response.status == 200:
                 html = await response.text()
-                soup = BeautifulSoup(html, features="html.parser")
+                soup = BeautifulSoup(html, features="lxml")
                 all_news = soup.find_all(attrs={"class": "news-card news-list-page__card"})
                 
                 news_list = []
@@ -98,7 +99,7 @@ async def get_news_techcrunch(session, url):
         async with session.get(url, headers=headers) as response:
             if response.status == 200:
                 html = await response.text()
-                soup = BeautifulSoup(html, features="html.parser")
+                soup = BeautifulSoup(html, features="lxml")
                 
                 all_text = soup.find_all(attrs={"class": "wp-block-paragraph"})[:-1]
                 text = ' '.join([p.text for p in all_text])
@@ -150,7 +151,7 @@ async def scraping_techcrunch(session, url):
         async with session.get(url, headers=headers) as response:
             if response.status == 200:
                 html = await response.text()
-                soup = BeautifulSoup(html, features="html.parser")
+                soup = BeautifulSoup(html, features="lxml")
                 all_news = soup.find_all(attrs={"class": "wp-block-tc23-post-picker"})
         
                 tasks = []
@@ -191,10 +192,6 @@ class Command(BaseCommand):
                     'category': category,
                 }
             )
-            if created:
-                self.stdout.write(self.style.SUCCESS(f'Created news: {news.title}'))
-            else:
-                self.stdout.write(self.style.SUCCESS(f'Updated news: {news.title}'))
         
         self.stdout.write(self.style.SUCCESS('Successfully updated news database'))
 
@@ -202,12 +199,18 @@ class Command(BaseCommand):
         url_1 = 'https://news.liga.net/en'
         url_2 = 'https://techcrunch.com'
 
+        time_start = time.time()
+
         conn = aiohttp.TCPConnector(ssl=False)
         async with aiohttp.ClientSession(connector=conn) as session:
             news_1, news_2 = await asyncio.gather(
             scraping_liga(session, url_1),
             scraping_techcrunch(session, url_2)
         )
+        
+        time_end = time.time()
+
+        self.stdout.write(self.style.SUCCESS(f'Time: {time_end - time_start}'))
 
         all_news = news_1 + news_2 if news_1 and news_2 else news_1 or news_2 or []
         

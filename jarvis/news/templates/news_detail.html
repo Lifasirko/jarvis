@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load custom_filters %}
+
 {% block content %}
 
 <style>
@@ -33,15 +35,11 @@
             {{ news.image_caption }}
 
         {% endif %}
-        <figcaption>
-            {% if news.image_caption %}
-                {{ news.image_caption }}
-            {% endif %}
         </figcaption>
     </figure>
 
     <p>{{ news.content }}</p>
 
-    <a href={{ news.source }} target="_blank">Original source</a>
+    <a href="{{ news.source }}" target="_blank">{{ news.source|get_domain }}</a>
 
 {% endblock %}

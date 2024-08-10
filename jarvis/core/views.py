@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -27,6 +28,7 @@ from .forms import FileUploadForm
 from .forms import ProfileForm, CustomPasswordChangeForm
 from .models import CustomUser
 from .models import File
+
 
 
 # def news_view(request):
@@ -91,6 +93,7 @@ def register_view(request):
             user = form.save()
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
+            call_command('update_news')
             return redirect('home')
     else:
         form = CustomUserCreationForm()
@@ -118,6 +121,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                call_command('update_news')
                 return redirect('home')
     else:
         form = AuthenticationForm()
