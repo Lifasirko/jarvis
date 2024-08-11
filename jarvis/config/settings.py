@@ -42,13 +42,13 @@ INSTALLED_APPS = [
 
     'jarvis.core',
 
-    'jarvis.notes',
+    'notes',
 
-    'jarvis.contacts',
+    'contacts',
 
-    'jarvis.task_manager',
+    'task_manager',
 
-    'jarvis.news',
+    'news',
 
     'django.contrib.sites',
     'allauth',
