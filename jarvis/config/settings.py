@@ -40,15 +40,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'core',
+    'jarvis.core',
 
-    'notes',
+    'jarvis.notes',
 
-    'contacts',
+    'jarvis.contacts',
 
-    'task_manager',
+    'jarvis.task_manager',
 
-    'news',
+    'jarvis.news',
 
     'django.contrib.sites',
     'allauth',
