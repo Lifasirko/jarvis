@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>News is updating...</h1>
+
+<script>
+    function checkTaskStatus(taskId) {
+        const url = "{% url 'news:task_status' task_id='TASK_ID_PLACEHOLDER' %}".replace('TASK_ID_PLACEHOLDER', taskId);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'SUCCESS') {
+                    window.location.href = "{% url 'news:news_list' %}";
+                } else {
+                    setTimeout(function() {
+                        checkTaskStatus(taskId);
+                    }, 2000);
+                }
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        checkTaskStatus("{{ task_id }}");
+    });
+</script>
+
+{% endblock %}

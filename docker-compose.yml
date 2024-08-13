@@ -10,7 +10,45 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
-      - ${DATABASE_PORT}:${DATABASE_PORT}
+      - "${DATABASE_PORT}:5432"  # Ensure the host port and container port match
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  worker:
+    restart: always
+    build:
+      context: ./
+    volumes:
+      - ./jarvis/config:/app/jarvis/jarvis/config
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - SITE_URL=${SITE_URL}
+      - EMAIL_BACKEND=${EMAIL_BACKEND}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USE_SSL=${EMAIL_USE_SSL}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE}
+      - PHONENUMBER_DB_FORMAT=${PHONENUMBER_DB_FORMAT}
+      - PHONENUMBER_DEFAULT_REGION=${PHONENUMBER_DEFAULT_REGION}
+      - CHAT_GPT_API_KEY=${CHAT_GPT_API_KEY}
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=${SOCIAL_AUTH_GOOGLE_OAUTH2_KEY}
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=${SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET}
+      - SOCIAL_ACC_NAME=${SOCIAL_ACC_NAME}
+      - CELERY_HOST=${CELERY_HOST}
+      - CELERY_PORT=${CELERY_PORT}
+    depends_on:
+      - redis
+    command: ["celery", "--workdir=./jarvis", "-A", "config", "worker"]
+
 
 volumes:
   postgres_data:

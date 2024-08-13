@@ -73,6 +73,7 @@
     </select>
 </form>
 <div class="table-container">
+    {% if all_news %}
     <table class="news-table">
         <thead>
             <tr>
@@ -108,6 +109,9 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+        <p>No news to display. Perhaps you would like to update.</p>
+    {% endif %}
 </div>
 
     {% comment %} <article class="news-card news-list-page__card">

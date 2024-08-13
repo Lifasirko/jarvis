@@ -4,7 +4,6 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 from news.models import News, Category
-import time
 
 headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15'}
 
@@ -199,18 +198,12 @@ class Command(BaseCommand):
         url_1 = 'https://news.liga.net/en'
         url_2 = 'https://techcrunch.com'
 
-        time_start = time.time()
-
         conn = aiohttp.TCPConnector(ssl=False)
         async with aiohttp.ClientSession(connector=conn) as session:
             news_1, news_2 = await asyncio.gather(
             scraping_liga(session, url_1),
             scraping_techcrunch(session, url_2)
         )
-        
-        time_end = time.time()
-
-        self.stdout.write(self.style.SUCCESS(f'Time: {time_end - time_start}'))
 
         all_news = news_1 + news_2 if news_1 and news_2 else news_1 or news_2 or []
         

@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
-from django.core.management import call_command
 from django.db.models import Case, When, Value, BooleanField
 
 from .models import News, Category
+from .tasks import update_news_task
 
 
 def news_list(request, page=1):
@@ -34,9 +34,11 @@ def news_list(request, page=1):
     paginator = Paginator(list(news), per_page=per_page)
     contacts_on_page = paginator.page(page)
 
+    # update_news_task.delay()
+
     return render(request, 'news_list.html', {"all_news": contacts_on_page,
                                               "categories": categories,
-                                              "selected_category": category,})
+                                              "selected_category": category})
 
 
 def news_detail(request, title):
@@ -64,5 +66,13 @@ def news_update(request):
     Returns:
     HttpResponseRedirect: Redirects to the news list page after updating.
     """
-    call_command('update_news')
-    return redirect('news:news_list')
+    task = update_news_task.delay()
+    return render(request, 'news_update.html', {'task_id': task.id})
+
+
+from django.http import JsonResponse
+from celery.result import AsyncResult
+
+def task_status(request, task_id):
+    task = AsyncResult(task_id)
+    return JsonResponse({'status': task.status})

@@ -111,13 +111,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+RUNNING_IN_DOCKER = env.bool('RUNNING_IN_DOCKER', default=False)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('DATABASE_NAME'),
         'USER': env('DATABASE_USER'),
         'PASSWORD': env('DATABASE_PASSWORD'),
-        'HOST': env('DATABASE_HOST', default='localhost'),
+        'HOST': env('DATABASE_HOST') if RUNNING_IN_DOCKER else 'localhost',
         'PORT': env('DATABASE_PORT', default='5432'),
     }
 }
@@ -195,3 +197,6 @@ LOGIN_URL = 'login/'
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_ACC_NAME = env("SOCIAL_ACC_NAME")
+
+CELERY_BROKER_URL = f'redis://{env('CELERY_HOST')}:{env('CELERY_PORT')}'
+CELERY_RESULT_BACKEND = f'redis://{env('CELERY_HOST')}:{env('CELERY_PORT')}'
