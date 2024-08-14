@@ -35,6 +35,24 @@
     justify-content: space-between;
     margin-top: 2rem;
     }
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+    
+    .news-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 2px solid #555;
+    }
+
+    .news-table th, .news-table td {
+        border: 1px solid #444;
+        padding: 10px;
+        text-align: center;
+        word-wrap: break-word;
+    }
    </style>
 
 <h1>News List</h1>
@@ -54,10 +72,49 @@
         {% endfor %}
     </select>
 </form>
+<div class="table-container">
+    {% if all_news %}
+    <table class="news-table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Title</th>
+                <th>Categories</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for n in all_news %}
+                <tr>
+                    {% if n.published_time %}
+                    <td>
+                        <time>
+                            {{ n.published_time }}
+                        </time>
+                    </td>
+                    {% else %}
+                    <td>
+                        Time not specified
+                    </td>
+                    {% endif %}
 
-{% for n in all_news %}
+                    <td>
+                        <a href="{% url 'news:news_detail' n.title %}">
+                            {{ n.title }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ n.category }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No news to display. Perhaps you would like to update.</p>
+    {% endif %}
+</div>
 
-    <article class="news-card news-list-page__card">
+    {% comment %} <article class="news-card news-list-page__card">
         <div>
             {% if n.published_time %}
                 <time class="news-card__time">
@@ -71,9 +128,7 @@
                 {{ n.category }}
             </span>
         </div>
-    </article>
-
-{% endfor %}
+    </article> {% endcomment %}
 
 <nav>
     <div class="pager">

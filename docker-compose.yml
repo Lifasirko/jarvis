@@ -1,6 +1,22 @@
 version: '3.8'
 
 services:
+#  web:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    command: gunicorn --workers 3 --bind 0.0.0.0:8000 jarvis.config.wsgi:application
+#    volumes:
+#      - .:/app
+#    ports:
+#      - "8000:8000"
+#    env_file:
+#      - .env
+#    depends_on:
+#      - db
+#    networks:
+#      - jarvis-net
+
   db:
     image: postgres:13
     volumes:
@@ -9,8 +25,21 @@ services:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - ${DATABASE_PORT}:${DATABASE_PORT}
+    networks:
+      - jarvis-net
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - jarvis-net
 
 volumes:
   postgres_data:
+
+networks:
+  jarvis-net:
