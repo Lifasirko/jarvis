@@ -21,3 +21,9 @@ cd .\jarvis\
 python manage.py runserver 8000
 
 
+cd ~/jarvis/jarvis
+source ../venv/bin/activate
+gunicorn --workers 3 jarvis.config.wsgi:application
+
+
+
