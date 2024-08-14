@@ -121,8 +121,6 @@ def note_create(request):
     })
 
 
-
-
 @login_required
 def note_edit(request, pk):
     """

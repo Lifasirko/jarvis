@@ -1,5 +1,6 @@
 from django import forms
 from .models import Note, Tag
+from core.models import File
 
 
 class TagForm(forms.ModelForm):
@@ -93,3 +94,4 @@ class NoteForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'placeholder': 'Enter the title here'}),
             'content': forms.Textarea(attrs={'placeholder': 'Enter the content here'}),
         }
+
