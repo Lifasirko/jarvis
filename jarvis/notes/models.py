@@ -8,10 +8,21 @@ class Tag(models.Model):
     Model to store tags for categorizing notes.
 
     Attributes:
-        name (CharField): The name of the tag. Maximum length of 255 characters.
-    """
-    name = models.CharField(max_length=255, unique=True)
+        name (CharField): The name of the tag. 
+            It can have a maximum length of 255 characters. 
+            This field is not unique, allowing tags with the same name to be associated with different users.
+        owner (ForeignKey): A foreign key to the user who owns the tag. 
+            This creates a many-to-one relationship where a user can have multiple tags, 
+            but each tag is associated with only one user. 
+            If the user is deleted, all their associated tags are also deleted (on_delete=models.CASCADE).
+            The `related_name` 'notes_tags' allows reverse querying from the user model to access their tags.
+            This field is optional (`null=True`, `blank=True`), meaning a tag can exist without an associated user.
 
+    Methods:
+        __str__(): Returns the string representation of the tag, which is its name.
+            This is useful for displaying the tag in admin interfaces and other representations of the model.
+    """
+    name = models.CharField(max_length=255, unique=False)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notes_tags', null=True, blank=True)
 
 
@@ -24,7 +35,7 @@ class Note(models.Model):
     Model to store notes for users.
 
     Attributes:
-        user (ForeignKey): The user to whom this note belongs. Links to the CustomUser model.
+        owner (ForeignKey): The user to whom this note belongs.
         title (CharField): The title of the note. Maximum length of 300 characters.
         content (TextField): The content of the note.
         created_at (DateTimeField): The date and time when the note was created.

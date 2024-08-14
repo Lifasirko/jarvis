@@ -34,15 +34,27 @@
         width: 100%;
         overflow-x: auto;
         margin-top: 20px;
+        border: 1px solid #555;
+        border-radius: 20px;
     }
 
     .notes-table {
         width: 100%;
         border-collapse: collapse;
-        border: 2px solid #555;
+        border-radius: 10px;
+        border: 1px solid #555;
     }
 
-    .notes-table th, .notes-table td {
+
+    .search-string {
+        width: 700px;
+        max-width: 700px;
+    }
+
+
+    .notes-table th,
+    .notes-table td {
+        /* border-radius: 5px;  */
         border: 1px solid #444;
         padding: 10px;
         text-align: center;
@@ -79,10 +91,11 @@
     }
 
     .action-buttons {
-        margin-bottom: 20px;
+        /* margin-bottom: 20px; */
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+        gap: 10px;
     }
 
     .btn-large {
@@ -94,8 +107,13 @@
         color: #ffffff;
         text-align: center;
         margin: 5px;
-        width: calc(100% - 20px);
-        max-width: 300px;
+        /* width: calc(100% - 20px); */
+        /* width: calc(100% - 30px); */
+        /* max-width: 300px; */
+        width: 200px;
+        max-width: 200px;
+        white-space: nowrap;
+
     }
 
     .btn-blue {
@@ -106,7 +124,8 @@
         background-color: #0077cc;
     }
 
-    .btn-secondary, .btn-danger {
+    .btn-secondary,
+    .btn-danger {
         padding: 10px 20px;
         border-radius: 5px;
         color: white;
@@ -135,7 +154,9 @@
     }
 
     @media (max-width: 480px) {
-        .notes-table th, .notes-table td {
+
+        .notes-table th,
+        .notes-table td {
             font-size: 14px;
             padding: 8px;
         }
@@ -146,70 +167,94 @@
             width: calc(100% - 20px);
         }
 
-        .search-button, .btn-large {
+        .search-button,
+        .btn-large {
             font-size: 14px;
             padding: 10px;
             width: 100%;
             max-width: 280px;
         }
 
-        .notes-table td a {
+        /* .notes-table td button {
             display: block;
             margin-bottom: 5px;
             width: 100%;
             text-align: center;
-        }
+        } */
     }
 </style>
 
 <div class="container">
     <h1>Notes</h1>
     <form method="get" action="{% url 'notes:note_list' %}">
-        <input type="text" name="search" placeholder="Search notes by title or tag...">
+        <input class="search-string" type="text" name="search" placeholder="Search notes by title or tag...">
         <button type="submit" class="search-button">Search</button>
     </form>
-<!--    <form method="get" action="{% url 'notes:note_list' %}" class="search-form">-->
-<!--        <input type="text" name="tag" placeholder="Search notes by tag..." class="search-input">-->
-<!--        <button type="submit" class="search-button">Search</button>-->
-<!--    </form>-->
-    <div class="action-buttons">
+
+    <p> </p>
+    <!--    <form method="get" action="{% url 'notes:note_list' %}" class="search-form">-->
+    <!--        <input type="text" name="tag" placeholder="Search notes by tag..." class="search-input">-->
+    <!--        <button type="submit" class="search-button">Search</button>-->
+    <!--    </form>-->
+    <!-- <div class="action-buttons">
         <a href="{% url 'notes:note_create' %}" class="btn-large btn-blue">Add New Note</a>
         <a href="{% url 'notes:tag_manage' %}" class="btn-large btn-blue">Edit Tags</a>
+    </div> -->
+
+    <div class="action-buttons">
+        <form action="{% url 'notes:note_create' %}" method="get" style="display:inline;">
+            <button type="submit" class="btn-large btn-blue">Add New Note</button>
+        </form>
+        <form action="{% url 'notes:tag_manage' %}" method="get" style="display:inline;">
+            <button type="submit" class="btn-large btn-blue">Edit Tags</button>
+        </form>
     </div>
 
     {% if notes %}
-        <div class="table-container">
-            <table class="notes-table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Tags</th>
-<!--                        <th>Created at</th>-->
-<!--                        <th>Updated at</th>-->
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for note in notes %}
-                        <tr>
-                            <td>{{ note.title }}</td>
-                            <td>{% for tag in note.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-<!--                            <td>{{ note.created_at }}</td>-->
-<!--                            <td>{{ note.updated_at }}</td>-->
-                            <td class="action-buttons">
-                                <a href="{% url 'notes:note_detail' note.pk %}" class="btn-secondary">View</a>
-                                <a href="{% url 'notes:note_edit' note.pk %}" class="btn-secondary">Edit</a>
-                                <a href="{% url 'notes:note_delete' note.pk %}" class="btn-danger">Delete</a>
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="5" class="no-notes">No notes found.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="table-container">
+        <table class="notes-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Tags</th>
+                    <!--                        <th>Created at</th>-->
+                    <!--                        <th>Updated at</th>-->
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in notes %}
+                <tr>
+                    <td>{{ note.title }}</td>
+                    <td>{% for tag in note.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </td>
+                    <!--                            <td>{{ note.created_at }}</td>-->
+                    <!--                            <td>{{ note.updated_at }}</td>-->
+                    <!-- <td class="action-buttons">
+                        <a href="{% url 'notes:note_detail' note.pk %}" class="btn-secondary">View</a>
+                        <a href="{% url 'notes:note_edit' note.pk %}" class="btn-secondary">Edit</a>
+                        <a href="{% url 'notes:note_delete' note.pk %}" class="btn-danger">Delete</a>
+                    </td> -->
+                    <td class="action-buttons">
+                        <form action="{% url 'notes:note_detail' note.pk %}" method="get">
+                            <button type="submit" class="btn-secondary">View</button>
+                        </form>
+                        <form action="{% url 'notes:note_edit' note.pk %}" method="get">
+                            <button type="submit" class="btn-secondary">Edit</button>
+                        </form>
+                        <form action="{% url 'notes:note_delete' note.pk %}" method="get">
+                            <button type="submit" class="btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="no-notes">No notes found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% endif %}
 </div>
 {% endblock %}
