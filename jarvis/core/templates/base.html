@@ -363,10 +363,13 @@
                         const lon = position.coords.longitude;
                         getWeather(lat, lon);
                     }, () => {
-                        alert('Could not determine location.');
+                        console.log('Could not determine location, using default location.');
+                        getWeather(50.4501, 30.5234); // Kyiv, Ukraine as default
                     });
                 } else {
-                    alert('Your browser does not support geolocation.');
+                    console.log('Geolocation is not supported, using default location.');
+                    getWeather(50.4501, 30.5234); // Kyiv, Ukraine as default
+
                 }
             }
 
