@@ -1,103 +1,180 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if note.pk %}Edit{% else %}New{% endif %} Note
+{% if note.pk %}Edit{% else %}New{% endif %} Note
 {% endblock %}
 
 {% block content %}
-    <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-        }
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
 
-        h1 {
-            color: #00aaff;
-        }
+    .content-field textarea {
+        width: 800px;
+        max-width: 800px;
+        min-height: 200px;
+        padding: 10px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        font-size: 20px;
+        background-color: #d4edda;
+        color: #333;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
 
-        form {
-            margin: 20px 0;
-        }
+    .content-field textarea:focus {
+        border-color: #66afe9;
+        outline: none;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(102, 175, 233, 0.6);
+        background-color: #c3e6cb;
+    }
 
-        button, input[type="submit"] {
-            background-color: #00aaff;
-            border: 2px solid #0077cc;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            color: white;
-            text-decoration: none;
-            display: inline-block;
-            margin: 5px;
-            text-align: center;
-        }
-
-        button:hover, input[type="submit"]:hover {
-            background-color: #0077cc;
-            border-color: #005fa3;
-        }
-
-        .btn-back {
-            background-color: #00aaff;
-            border: 2px solid #0077cc;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            color: white;
-            text-decoration: none;
-            display: inline-block;
-            margin: 5px;
-            text-align: center;
-        }
-
-        .btn-back:hover {
-            background-color: #0077cc;
-            border-color: #005fa3;
-        }
-    </style>
+    .titles {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 auto;
+        margin-bottom: 30px;
+    }
 
 
-    <h1>{% if note %}Edit{% else %}New{% endif %} Note</h1>
-    <h2>Tags</h2>
-    <!-- Search form -->
-    <form method="get" action="{% url 'notes:note_create' %}">
-        <input type="text" name="search" placeholder="Search tags..." value="{{ search_query }}">
-        <button type="submit">Search</button>
-    </form>
+    h1 {
+        color: #00aaff;
+    }
 
-    <!-- Note form -->
-    <form method="post" action="{% if note %}{% url 'notes:note_edit' note.pk %}{% else %}{% url 'notes:note_create' %}{% endif %}">
-        {% csrf_token %}
+    form {
+        margin: 20px 0;
+    }
 
-        <div class="tag-list">
+
+    input {
+        width: 800px;
+        max-width: 800px;
+    }
+
+    .tag-list {
+
+        font-size: 16px;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+        text-align: left;
+        margin-bottom: 30px;
+    }
+
+    button,
+    input[type="submit"] {
+        background-color: #00aaff;
+        border: 2px solid #0077cc;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+        text-align: center;
+    }
+
+    button:hover,
+    input[type="submit"]:hover {
+        background-color: #0077cc;
+        border-color: #005fa3;
+    }
+
+    .btn-back {
+        background-color: #00aaff;
+        border: 2px solid #0077cc;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+        text-align: center;
+    }
+
+    .btn-back:hover {
+        background-color: #0077cc;
+        border-color: #005fa3;
+    }
+
+    .new-tags-block {
+        margin-bottom: 20px;
+    }
+
+    .multi-select {
+        width: 300px;
+        max-width: 300px;
+        height: 100px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        background-color: #c0e8bc;
+        font-size: 16px;
+        color: #333;
+        overflow: auto;
+    }
+
+    .multi-select option {
+        padding: 5px;
+        border-bottom: 1px solid #000000;
+    }
+
+    .multi-select option:hover {
+        background-color: #31d218;
+    }
+</style>
+
+
+<h1>{% if note %}Edit{% else %}New{% endif %} Note</h1>
+<!-- <h2>Tags</h2> -->
+<!-- Search form -->
+<!-- <form method="get" action="{% url 'notes:note_create' %}">
+    <input type="text" name="search" placeholder="Search tags..." value="{{ search_query }}">
+    <button type="submit">Search</button>
+</form> -->
+
+<!-- Note form -->
+<form method="post" enctype="multipart/form-data"
+    action="{% if note %}{% url 'notes:note_edit' note.pk %}{% else %}{% url 'notes:note_create' %}{% endif %}">
+    {% csrf_token %}
+
+    <div class="new-tags-block">
+        <h3 class="titles" for="{{ form.title.id_for_label }}">Title:</h3>
+        {{ form.title }}
+    </div>
+
+    <div class="content-field">
+        <h3 class="titles" for="{{ form.content.id_for_label }}">Content:</h3>
+        {{ form.content }}
+    </div>
+
+    <h2 class="titles">Tags</h2>
+    <div class="tag-list">
+        <select name="tags" multiple class="multi-select">
             {% for tag in tags %}
-                <label>
-                    <input type="checkbox" name="tags" value="{{ tag.id }}"
-                        {% if tag.id in selected_tags %}checked{% endif %}>
-                    {{ tag.name }}
-                </label><br>
+            <option value="{{ tag.id }}" {% if tag.id in selected_tags %}selected{% endif %}>
+                {{ tag.name }}
+            </option>
             {% endfor %}
-        </div>
+        </select>
+    </div>
 
-        <div>
-            <label for="{{ form.new_tags.id_for_label }}">New Tags:</label>
-            {{ form.new_tags }}
-        </div>
+    <div class="new-tags-block">
+        <h3 class="titles" for="{{ form.new_tags.id_for_label }}">New Tags:</h3>
+        {{ form.new_tags }}
+    </div>
 
-        <div>
-            <label for="{{ form.title.id_for_label }}">Title:</label>
-            {{ form.title }}
-        </div>
+    <button class="new-tags-block" type="submit">{% if note %}Update{% else %}Save{% endif %}</button>
+</form>
 
-        <div>
-            <label for="{{ form.content.id_for_label }}">Content:</label>
-            {{ form.content }}
-        </div>
 
-        <button type="submit">{% if note %}Update{% else %}Save{% endif %}</button>
-    </form>
-    <a href="{% url 'notes:note_list' %}">Back to Notes</a>
+<a href="{% url 'notes:note_list' %}">Back to Notes</a>
 {% endblock %}
